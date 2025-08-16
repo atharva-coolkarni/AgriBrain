@@ -1,0 +1,300 @@
+/* .input-box {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+  margin-bottom: 15px;
+  font-size: 16px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.input-box:focus {
+  border-color: #4caf50;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.submit-btn,
+.back-btn {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #4caf50, #8bc34a);
+  color: white;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #388e3c, #689f38);
+}
+
+.back-btn {
+  background: linear-gradient(135deg, #f44336, #e57373);
+  color: white;
+}
+
+.back-btn:hover {
+  background: linear-gradient(135deg, #d32f2f, #ef5350);
+}
+
+.schemes-table {
+  margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.schemes-table th,
+.schemes-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.schemes-table th {
+  background-color: #a5d6a7;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.schemes-table tr:hover {
+  background-color: #f1f8e9;
+}
+
+.eligibility-btn {
+  margin-top: 15px;
+  background: linear-gradient(135deg, #03a9f4, #81d4fa);
+  color: white;
+  border: none;
+  padding: 12px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+}
+
+.eligibility-btn:hover {
+  background: linear-gradient(135deg, #0288d1, #4fc3f7);
+}
+
+.eligibility-questions {
+  margin-top: 20px;
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question-row {
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recommendation-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f1f8e9;
+  border-left: 5px solid #4caf50;
+  border-radius: 6px;
+} */
+
+
+
+/* Fade & Slide Animation */
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page Background */
+body {
+  background: linear-gradient(135deg, #eaf5e0, #f7f3e7);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Input Box */
+.input-box {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  margin-bottom: 18px;
+  font-size: 16px;
+  margin-left: 25px;
+  margin-right: 25px;
+  resize: none;
+  outline: none;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+  animation: fadeSlideUp 0.5s ease forwards;
+}
+
+.input-box:focus {
+  border-color: #43a047;
+  box-shadow: 0 0 10px rgba(67, 160, 71, 0.35);
+  background: #fff;
+}
+
+/* Buttons */
+.button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  animation: fadeSlideUp 0.6s ease forwards;
+  justify-content: center;
+}
+
+.submit-btn,
+.back-btn {
+  flex: 0 0 45%; /* Reduced width from ~50% */
+  padding: 12px 0; /* Slightly reduced height */
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 15px; /* Adjusted for proportion */
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  letter-spacing: 0.6px;
+}
+
+/* Primary Submit Button */
+.submit-btn {
+  background: linear-gradient(135deg, #43a047, #81c784);
+  color: white;
+  box-shadow: 0px 4px 12px rgba(67, 160, 71, 0.3);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 16px rgba(46, 125, 50, 0.35);
+}
+
+/* Back Button */
+.back-btn {
+  background: linear-gradient(135deg, #e53935, #ef9a9a);
+  color: white;
+  box-shadow: 0px 4px 12px rgba(229, 57, 53, 0.3);
+}
+
+.back-btn:hover {
+  background: linear-gradient(135deg, #b71c1c, #e57373);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 16px rgba(183, 28, 28, 0.35);
+}
+
+/* Table */
+.schemes-table {
+  margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 3px solid #000; 
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.08);
+  animation: fadeSlideUp 0.7s ease forwards;
+}
+
+.schemes-table th,
+.schemes-table td {
+  border: 10px solid #000; 
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.schemes-table th {
+  background: linear-gradient(135deg, #81c784, #a5d6a7);
+  color: #000; /* Black text for contrast */
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.schemes-table tr {
+  transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+.schemes-table tr:hover {
+  background-color: #f1f8e9;
+  transform: scale(1.01);
+}
+
+
+/* Eligibility Button */
+.eligibility-btn {
+  margin-top: 18px;
+  background: linear-gradient(135deg, #03a9f4, #4fc3f7);
+  color: white;
+  border: none;
+  padding: 14px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 12px rgba(3, 169, 244, 0.3);
+  animation: fadeSlideUp 0.8s ease forwards;
+}
+
+.eligibility-btn:hover {
+  background: linear-gradient(135deg, #0288d1, #29b6f6);
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 16px rgba(2, 136, 209, 0.35);
+}
+
+/* Eligibility Questions */
+.eligibility-questions {
+  margin-top: 20px;
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  animation: fadeSlideUp 0.9s ease forwards;
+}
+
+.question-row {
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Recommendation Box */
+.recommendation-box {
+  margin-top: 20px;
+  padding: 18px;
+  background: #f1f8e9;
+  border-left: 6px solid #4caf50;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.15);
+  animation: fadeSlideUp 1s ease forwards;
+}

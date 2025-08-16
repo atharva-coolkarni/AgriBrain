@@ -1,0 +1,222 @@
+
+/* === Weather Grid === */
+
+.weather-cards {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+}
+
+
+.weather-cards::-webkit-scrollbar {
+  height: 8px;
+}
+
+.weather-cards::-webkit-scrollbar-thumb {
+  background: #a5d6a7;
+  border-radius: 4px;
+}
+
+.weather-card {
+  flex: 0 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #a5d6a7;
+  min-width: 150px;
+  scroll-snap-align: start;
+  transition: transform 0.2s ease;
+}
+
+.weather-card:hover {
+  transform: translateY(-4px);
+}
+
+.weather-card i {
+  font-size: 2rem;
+  color: #8bc34a;
+  margin: 10px 0;
+}
+
+.weather-card p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #5d5d5d;
+}
+
+.weather-date {
+  font-weight: 600;
+  color: #3b6e3c;
+}
+/* === Feature Buttons (Bottom) === */
+.feature-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 40px 0;
+}
+
+.feature-btn {
+  background: linear-gradient(135deg, #4caf50, #cddc39);
+  color: white;
+  border: none;
+  padding: 16px 30px;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+  justify-content: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.feature-btn:hover {
+  background: linear-gradient(135deg, #388e3c, #afb42b);
+  transform: translateY(-3px);
+}
+
+.feature-btn:active {
+  transform: scale(0.97);
+}
+
+/* === Popup === */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.popup-content h3 {
+  margin-bottom: 20px;
+  color: #3b6e3c;
+}
+
+.popup-content button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #8bc34a, #dce775);
+  color: white;
+  font-weight: 500;
+}
+
+.popup-content button:hover {
+  background: linear-gradient(135deg, #7cb342, #cddc39);
+}
+
+/* Icons inside buttons */
+.feature-btn i {
+  font-size: 1.4rem;
+}
+
+/* Popup logo + title */
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 15px;
+  margin-right: 5px;
+}
+
+.popup-header img {
+  height: 40px;
+}
+
+.popup-header h3 {
+  font-size: 1.4rem;
+  color: #3b6e3c;
+  margin: 0;
+}
+
+/* === Forecast Section === */
+.forecast-section {
+  margin: 30px 0;
+}
+
+.forecast-section h2 {
+  text-align: center;
+  color: #3b6e3c;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+/* Horizontal scroll for forecast cards */
+.forecast-cards {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+}
+
+.forecast-cards::-webkit-scrollbar {
+  height: 8px;
+}
+
+.forecast-cards::-webkit-scrollbar-thumb {
+  background: #a5d6a7;
+  border-radius: 4px;
+}
+
+.forecast-card {
+  flex: 0 0 auto;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #a5d6a7;
+  min-width: 150px;
+  scroll-snap-align: start;
+  transition: transform 0.2s ease;
+}
+
+.forecast-card:hover {
+  transform: translateY(-4px);
+}
+
+.forecast-card i {
+  font-size: 2rem;
+  color: #8bc34a;
+  margin: 10px 0;
+}
+
+.forecast-card p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #5d5d5d;
+}
+
+.forecast-date {
+  font-weight: 600;
+  color: #3b6e3c;
+}

@@ -1,0 +1,122 @@
+/* crop.css */
+.crop-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f9fff5;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+.crop-container h1 {
+  text-align: center;
+  color: #2e7d32;
+}
+
+.crop-container p {
+  text-align: center;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.accordion {
+  margin-bottom: 1rem;
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: #a5d6a7;
+  color: #1b5e20;
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  width: 100%;
+  text-align: left;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.accordion-header:hover {
+  background: #81c784;
+}
+
+.accordion-header .arrow {
+  transition: transform 0.3s ease;
+}
+
+.accordion-header.active .arrow {
+  transform: rotate(90deg);
+}
+
+.accordion-content {
+  background: #f1f8e9;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.accordion-content label {
+  font-weight: bold;
+  color: #33691e;
+}
+
+.accordion-content input,
+.accordion-content select {
+  padding: 0.5rem;
+  border: 1px solid #c8e6c9;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.submit-btn {
+  background: #388e3c;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover {
+  background: #2e7d32;
+}
+
+.back-btn {
+  margin-left: 1rem;
+  background: #e0e0e0;
+  color: #333;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.back-btn:hover {
+  background: #bdbdbd;
+}
+
+.api-response {
+  margin-top: 2rem;
+  background: #fffde7;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #fff9c4;
+}
+
+.api-response h3 {
+  margin-bottom: 0.5rem;
+  color: #f57f17;
+}
