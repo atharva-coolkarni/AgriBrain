@@ -1,11 +1,12 @@
 from flask import Flask, jsonify , request
 import json
-
-from links import create_database   
-from rec import get_schemes, eligibility_check , compare_scheme_dicts
+from flask_cors import CORS
+from fetch_schemes import create_database   
+from recommendation import get_schemes, eligibility_check , compare_scheme_dicts
 from pymongo import MongoClient
 
 app = Flask(__name__)
+CORS(app)
 
 def fetch_schemes_as_name_keyed_dict(connection_string, database_name, collection_name):
         """
