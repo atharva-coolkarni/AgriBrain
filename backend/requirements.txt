@@ -1,0 +1,10 @@
+flask
+pymongo
+requests
+asyncio
+playwright
+urllib3
+sentence-transformers
+langchain
+langchain-community
+faiss-cpu
