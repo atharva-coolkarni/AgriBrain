@@ -1,4 +1,7 @@
 flask
+fastapi
+uvicorn[standard]
+pydantic
 pymongo
 requests
 asyncio
@@ -8,7 +11,5 @@ sentence-transformers
 langchain
 langchain-community
 faiss-cpu
-fastapi
-uvicorn[standard]
-pydantic
 python-dotenv
+flask_cors

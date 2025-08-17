@@ -14,6 +14,7 @@ from scheme_recommendation.recommendation import (
 from crop_recommender_backend.CropPlanner import (
     generate_crop_plan_with_gemini,
     calculate_score,
+    crop_data_translator,
     FORECAST_WEATHER_URL,
     HISTORICAL_WEATHER_URL,
 )
@@ -188,7 +189,7 @@ def recommend_crop():
             "daily": ["temperature_2m_max", "temperature_2m_min", "rain_sum"],
             "timezone": "auto",
         }
-
+        lang_param="english"
         historical_response = requests.get(HISTORICAL_WEATHER_URL, params=historical_params)
         forecast_response = requests.get(FORECAST_WEATHER_URL, params=forecast_params)
 
@@ -217,12 +218,13 @@ def recommend_crop():
         "historical_data": historical_data,
         "forecast_data": forecast_data,
     }
-    crop_plan_report = generate_crop_plan_with_gemini(best_crop, user_input, weather_data_combined)
-
+    crop_plan_report = generate_crop_plan_with_gemini(best_crop, user_input, weather_data_combined, lang_param)
+    crop_details = crop_data_translator(best_crop, lang_param)
+ 
     return jsonify(
         {
             "message": "Crop recommendation and plan generated successfully!",
-            "recommended_crop_details": best_crop,
+            "recommended_crop_details": crop_details,
             "suitability_score": best_score,
             "crop_plan_report": crop_plan_report,
         }
