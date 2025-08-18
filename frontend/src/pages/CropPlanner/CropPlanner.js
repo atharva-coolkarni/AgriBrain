@@ -70,7 +70,13 @@ function CropPlanner() {
     temperatureRange: "Temperature Range",
     rainfallRequirement: "Rainfall Requirement",
     irrigation: "Irrigation",
-    aiCropPlanReport: "AI Crop Plan Report"
+    aiCropPlanReport: "AI Crop Plan Report",
+     laborOptions: {
+      self: "Family/Self Only",
+      occasional: "Occasional Hired Help",
+      regular: "Regular Hired Help",
+      large: "Large Workforce Available"
+    }
   },
 
   hindi: {
@@ -138,7 +144,13 @@ function CropPlanner() {
     temperatureRange: "तापमान सीमा",
     rainfallRequirement: "वर्षा की आवश्यकता",
     irrigation: "सिंचाई",
-    aiCropPlanReport: "एआई फसल योजना रिपोर्ट"
+    aiCropPlanReport: "एआई फसल योजना रिपोर्ट",
+    laborOptions: {
+      self: "केवल परिवार/स्वयं",
+      occasional: "कभी-कभार किराए के मजदूर",
+      regular: "नियमित किराए के मजदूर",
+      large: "बड़ी कार्यबल उपलब्ध"
+    }
   },
 
   tamil: {
@@ -206,7 +218,13 @@ function CropPlanner() {
     temperatureRange: "வெப்பநிலை வரம்பு",
     rainfallRequirement: "மழை தேவையா?",
     irrigation: "நீர்ப்பாசனம்",
-    aiCropPlanReport: "AI பயிர் திட்ட அறிக்கை"
+    aiCropPlanReport: "AI பயிர் திட்ட அறிக்கை",
+    laborOptions: {
+      self: "குடும்பம்/சுயமாக மட்டும்",
+      occasional: "அரிதாக கூலி உதவி",
+      regular: "வழக்கமான கூலி உதவி",
+      large: "பெரிய பணியாளர்கள் கிடைக்கின்றனர்"
+    }
   },
 
   telugu: {
@@ -274,7 +292,13 @@ function CropPlanner() {
     temperatureRange: "ఉష్ణోగ్రత పరిధి",
     rainfallRequirement: "వర్షపాతం అవసరం",
     irrigation: "పొలాల నీటిపారుదల",
-    aiCropPlanReport: "AI పంట ప్రణాళిక నివేదిక"
+    aiCropPlanReport: "AI పంట ప్రణాళిక నివేదిక",
+     laborOptions: {
+      self: "కుటుంబం/తానే మాత్రమే",
+      occasional: "అప్పుడప్పుడూ అద్దె సహాయం",
+      regular: "నియమిత అద్దె సహాయం",
+      large: "పెద్ద కార్మిక బలగం అందుబాటులో ఉంది"
+    }
   },
 
   punjabi: {
@@ -342,7 +366,13 @@ function CropPlanner() {
     temperatureRange: "ਤਾਪਮਾਨ ਸੀਮਾ",
     rainfallRequirement: "ਵਰਖਾ ਦੀ ਲੋੜ",
     irrigation: "ਸਿੰਚਾਈ",
-    aiCropPlanReport: "AI ਫਸਲ ਯੋਜਨਾ ਰਿਪੋਰਟ"
+    aiCropPlanReport: "AI ਫਸਲ ਯੋਜਨਾ ਰਿਪੋਰਟ",
+    laborOptions: {
+      self: "ਕੇਵਲ ਪਰਿਵਾਰ/ਆਪਣੇ",
+      occasional: "ਕਦੇ-ਕਦੇ ਕਿਰਾਏ ਦੇ ਮਜ਼ਦੂਰ",
+      regular: "ਨਿਯਮਿਤ ਕਿਰਾਏ ਦੇ ਮਜ਼ਦੂਰ",
+      large: "ਵੱਡਾ ਵਰਕਫੋਰਸ ਉਪਲਬਧ"
+    }
   },
 
   marathi: {
@@ -410,7 +440,13 @@ function CropPlanner() {
     temperatureRange: "तापमान श्रेणी",
     rainfallRequirement: "पावसाचे प्रमाण आवश्यक",
     irrigation: "सिंचन",
-    aiCropPlanReport: "एआय पिक नियोजन अहवाल"
+    aiCropPlanReport: "एआय पिक नियोजन अहवाल",
+    laborOptions: {
+      self: "फक्त कुटुंब/स्वतः",
+      occasional: "कधी कधी मजूर मदत",
+      regular: "नियमित मजूर मदत",
+      large: "मोठा मनुष्यबळ उपलब्ध"
+    }
   },
   
 };
@@ -420,7 +456,7 @@ function CropPlanner() {
   const location = useLocation();
   const { lat, lon, language } = location.state || {};
   const t = translations[language || "english"];
-  const [loading, setLoading] = useState(false);
+  const [loadingCheck, setLoading] = useState(false);
   const [expanded, setExpanded] = useState(null);
   const [formData, setFormData] = useState({
     soilType: "",
@@ -454,6 +490,7 @@ function CropPlanner() {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       console.log(formData);
       const res = await fetch("http://127.0.0.1:5000/recommend-crop", {
         method: "POST",
@@ -464,8 +501,10 @@ function CropPlanner() {
       console.log("Form Data:", formData);
       console.log(`Response Data: ${JSON.stringify(data)}`);
       setResponseData(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error:", error);
+      setLoading(false);
     }
   };
 
@@ -546,7 +585,13 @@ function CropPlanner() {
             </select>
 
             <label>{t.labor}:</label>
-            <input type="text" name="labor" value={formData.labor} onChange={handleChange} />
+            <select name="labor" value={formData.labor} onChange={handleChange}>
+              <option value="">{t.selectOption}</option>
+              <option value="Family/Self Only">{t.laborOptions.self}</option>
+              <option value="Occasional">{t.laborOptions.occasional}</option>
+              <option value="Regular">{t.laborOptions.regular}</option>
+              <option value="Large">{t.laborOptions.large}</option>
+            </select>
           </div>
         )}
       </div>
@@ -576,7 +621,7 @@ function CropPlanner() {
         )}
       </div>
 
-      <button className="submit-btn" onClick={handleSubmit}>{t.submit}</button>
+      <button className="submit-btn" onClick={handleSubmit}>{loadingCheck ? t.loading : t.submit}</button>
       <button className="back-btn" onClick={() => navigate("/")}>{t.back}</button>
 
       {responseData && (

@@ -313,7 +313,7 @@ function Home() {
         <div className="manual-input">
           <input
             type="text"
-            placeholder="Enter city..."
+            placeholder={t.enterCity}
             value={manualCity}
             onChange={(e) => setManualCity(e.target.value)}
           />

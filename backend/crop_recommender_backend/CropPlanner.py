@@ -150,6 +150,69 @@ def crop_data_translator(crop_data, target_language):
         print(f"Error calling Gemini API: {e}")
         return {"error": "Error translating crop data."}
 
+def translate_user_input(fertilizer_value, pest_disease_value):
+    """
+    Translates two words from any language to English using the Gemini API.
+    It uses regex to ensure a reliable extraction of the translated words.
+
+    Args:
+        fertilizer_value (str): The value of the 'fertilizer' field.
+        pest_disease_value (str): The value of the 'pestDisease' field.
+
+    Returns:
+        tuple: A tuple containing the translated English strings for fertilizer and pestDisease.
+               Returns the original values if translation fails.
+    """
+    # Create a simple JSON object to send to the API
+    data_to_translate = {
+        "fertilizer": fertilizer_value,
+        "pestDisease": pest_disease_value
+    }
+
+    prompt_text = f"""
+    Translate only the VALUES of the following JSON into English.
+    Do not translate the KEYS.
+    Return only valid JSON, nothing else.
+
+    {json.dumps(data_to_translate, ensure_ascii=False, indent=2)}
+    """
+
+    payload = {
+        "contents": [{"parts": [{"text": prompt_text}]}]
+    }
+
+    try:
+        response = requests.post(
+            GEMINI_API_URL,
+            headers={"Content-Type": "application/json"},
+            params={"key": GEMINI_API_KEY},
+            data=json.dumps(payload),
+        )
+        response.raise_for_status()
+        result = response.json()
+
+        if "candidates" not in result or not result["candidates"]:
+            print("Gemini API returned an unexpected response.")
+            return fertilizer_value, pest_disease_value
+
+        translated_text = result["candidates"][0]["content"]["parts"][0]["text"]
+        
+        # Use regex to find and extract the translated values
+        fertilizer_match = re.search(r'"fertilizer"\s*:\s*"([^"]*)"', translated_text)
+        pest_disease_match = re.search(r'"pestDisease"\s*:\s*"([^"]*)"', translated_text)
+        
+        # Get the values from the regex matches, or fall back to original values
+        translated_fertilizer = fertilizer_match.group(1) if fertilizer_match else fertilizer_value
+        translated_pest_disease = pest_disease_match.group(1) if pest_disease_match else pest_disease_value
+
+        # Return the translated values as a tuple
+        return translated_fertilizer, translated_pest_disease
+
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+        print(f"Error calling Gemini API for translation: {e}")
+        # Return original values on error
+        return fertilizer_value, pest_disease_value
+
 def generate_crop_plan_with_gemini(recommended_crop, user_input, weather_data, language):
     if not GEMINI_API_KEY:
         return "Gemini API Key not set. Please check your .env file."
@@ -195,7 +258,7 @@ def generate_crop_plan_with_gemini(recommended_crop, user_input, weather_data, l
     - Next 7 Days Total Rainfall: {sum(weather_data.get("forecast_data", {}).get("rain_sum", [])) if weather_data.get("forecast_data", {}).get("rain_sum") else 'N/A'} mm
 
     ### Instructions for the Gemini API:
-    - Your report should be in Markdown format.
+    - Your report should be in Markdown format but no bold words and size of all words should be same.
     - Start with a clear heading like "Your Crop Plan for [Crop Name]".
     - Structure the report into clear sections:
         1.  *Why [Crop Name]?*: A brief explanation of why this crop is a great fit for their conditions.

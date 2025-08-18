@@ -15,6 +15,7 @@ from crop_recommender_backend.CropPlanner import (
     generate_crop_plan_with_gemini,
     calculate_score,
     crop_data_translator,
+    translate_user_input,
     FORECAST_WEATHER_URL,
     HISTORICAL_WEATHER_URL,
 )
@@ -180,6 +181,8 @@ def recommend_crop():
         return jsonify({"error": "Database connection not available"}), 500
 
     user_input = request.get_json()
+    user_input["fertilizer"], user_input["pestDisease"]=translate_user_input(user_input["fertilizer"], user_input["pestDisease"])
+    print(user_input["fertilizer"], user_input["pestDisease"])
 
     try:
         historical_params = {
