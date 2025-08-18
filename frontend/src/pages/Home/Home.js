@@ -16,6 +16,145 @@ const markerIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
+// Translations dictionary
+const translations = {
+  english: {
+    title: "AgriBrain",
+    selectedLocation: "📍 Selected Location:",
+    enterCity: "Enter city...",
+    submit: "Submit",
+    cancel: "Cancel",
+    selectLocationMethod: "Select Location Method",
+    useCurrent: "Use Current Location",
+    typeManually: "Type Manually",
+    selectOnMap: "Select on Map",
+    cropPlanner: "Crop Planner",
+    govtSchemes: "Government Schemes",
+    weather: {
+      temperature: "Temperature",
+      windspeed: "Wind Speed",
+      winddirection: "Wind Direction",
+      humidity: "Humidity",
+      precipitation: "Precipitation",
+      soilTemp: "Soil Temp",
+      soilMoisture: "Soil Moisture",
+    },
+    forecast: "7-Day Forecast",
+    max: "Max",
+    min: "Min",
+    rain: "Rain",
+    wind: "Wind",
+  },
+  hindi: {
+    title: "एग्रीब्रेन",
+    selectedLocation: "📍 चयनित स्थान:",
+    enterCity: "शहर दर्ज करें...",
+    submit: "जमा करें",
+    cancel: "रद्द करें",
+    selectLocationMethod: "स्थान चयन विधि चुनें",
+    useCurrent: "वर्तमान स्थान उपयोग करें",
+    typeManually: "मैन्युअल रूप से दर्ज करें",
+    selectOnMap: "मानचित्र पर चुनें",
+    cropPlanner: "फसल योजनाकार",
+    govtSchemes: "सरकारी योजनाएँ",
+    weather: {
+      temperature: "तापमान",
+      windspeed: "पवन गति",
+      winddirection: "पवन दिशा",
+      humidity: "नमी",
+      precipitation: "वर्षा",
+      soilTemp: "मृदा तापमान",
+      soilMoisture: "मृदा नमी",
+    },
+    forecast: "7-दिवसीय पूर्वानुमान",
+    max: "अधिकतम",
+    min: "न्यूनतम",
+    rain: "वर्षा",
+    wind: "पवन",
+  },
+  marathi: {
+    title: "एग्रीब्रेन",
+    selectedLocation: "📍 निवडलेले ठिकाण:",
+    enterCity: "शहर प्रविष्ट करा...",
+    submit: "सबमिट",
+    cancel: "रद्द करा",
+    selectLocationMethod: "स्थान निवडण्याची पद्धत",
+    useCurrent: "सध्याचे स्थान वापरा",
+    typeManually: "स्वतः प्रविष्ट करा",
+    selectOnMap: "नकाशावर निवडा",
+    cropPlanner: "पीक नियोजक",
+    govtSchemes: "शासकीय योजना",
+    weather: {
+      temperature: "तापमान",
+      windspeed: "वाऱ्याचा वेग",
+      winddirection: "वाऱ्याची दिशा",
+      humidity: "आर्द्रता",
+      precipitation: "पाऊस",
+      soilTemp: "मातीचे तापमान",
+      soilMoisture: "मातीतील आर्द्रता",
+    },
+    forecast: "७ दिवसांचा अंदाज",
+    max: "कमाल",
+    min: "किमान",
+    rain: "पाऊस",
+    wind: "वारा",
+  },
+  tamil: {
+    title: "அக்ரிப்ரெயின்",
+    selectedLocation: "📍 தேர்ந்தெடுக்கப்பட்ட இடம்:",
+    enterCity: "நகரத்தை உள்ளிடவும்...",
+    submit: "சமர்ப்பிக்கவும்",
+    cancel: "ரத்து செய்யவும்",
+    selectLocationMethod: "இடத்தை தேர்ந்தெடுக்கும் முறை",
+    useCurrent: "தற்போதைய இடம் பயன்படுத்து",
+    typeManually: "கையால் உள்ளிடவும்",
+    selectOnMap: "வரைபடத்தில் தேர்ந்தெடுக்கவும்",
+    cropPlanner: "பயிர் திட்டமிடுபவர்",
+    govtSchemes: "அரசு திட்டங்கள்",
+    weather: {
+      temperature: "வெப்பநிலை",
+      windspeed: "காற்றின் வேகம்",
+      winddirection: "காற்றின் திசை",
+      humidity: "ஈரப்பதம்",
+      precipitation: "மழை",
+      soilTemp: "மண் வெப்பநிலை",
+      soilMoisture: "மண் ஈரப்பதம்",
+    },
+    forecast: "7-நாள் காலநிலை",
+    max: "அதிகபட்சம்",
+    min: "குறைந்தபட்சம்",
+    rain: "மழை",
+    wind: "காற்று",
+  },
+  punjabi: {
+    title: "ਐਗਰੀਬ੍ਰੇਨ",
+    selectedLocation: "📍 ਚੁਣਿਆ ਸਥਾਨ:",
+    enterCity: "ਸ਼ਹਿਰ ਦਰਜ ਕਰੋ...",
+    submit: "ਜਮ੍ਹਾਂ ਕਰੋ",
+    cancel: "ਰੱਦ ਕਰੋ",
+    selectLocationMethod: "ਸਥਾਨ ਚੁਣਨ ਦੀ ਵਿਧੀ",
+    useCurrent: "ਮੌਜੂਦਾ ਸਥਾਨ ਵਰਤੋ",
+    typeManually: "ਹੱਥੋਂ ਦਰਜ ਕਰੋ",
+    selectOnMap: "ਨਕਸ਼ੇ 'ਤੇ ਚੁਣੋ",
+    cropPlanner: "ਫਸਲ ਯੋਜਕ",
+    govtSchemes: "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ",
+    weather: {
+      temperature: "ਤਾਪਮਾਨ",
+      windspeed: "ਹਵਾ ਦੀ ਗਤੀ",
+      winddirection: "ਹਵਾ ਦੀ ਦਿਸ਼ਾ",
+      humidity: "ਨਮੀ",
+      precipitation: "ਬਰਸਾਤ",
+      soilTemp: "ਮਿੱਟੀ ਦਾ ਤਾਪਮਾਨ",
+      soilMoisture: "ਮਿੱਟੀ ਦੀ ਨਮੀ",
+    },
+    forecast: "7-ਦਿਨਾਂ ਦਾ ਅਨੁਮਾਨ",
+    max: "ਵੱਧ ਤੋਂ ਵੱਧ",
+    min: "ਘੱਟ ਤੋਂ ਘੱਟ",
+    rain: "ਬਰਸਾਤ",
+    wind: "ਹਵਾ",
+  },
+};
+
 function LocationMarker({ onSelect }) {
   useMapEvents({
     click(e) {
@@ -35,9 +174,13 @@ function Home() {
   const [showMap, setShowMap] = useState(false);
   const [locationName, setLocationName] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("english");
 
   const navigate = useNavigate();
 
+  const t = translations[selectedLanguage];
+
+  
   const fetchLocationName = async (latitude, longitude) => {
     try {
       const res = await axios.get(
@@ -130,6 +273,18 @@ function Home() {
   return (
     <div className="app-container">
 
+      {/* Language Dropdown */}
+      <div className="language-selector">
+        <select value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)}>
+          <option value="english">English</option>
+          <option value="hindi">हिन्दी</option>
+          <option value="marathi">मराठी</option>
+          <option value="tamil">தமிழ்</option>
+          <option value="telugu">తెలుగు</option>
+          <option value="punjabi">ਪੰਜਾਬੀ</option>
+        </select>
+      </div>
+
       {/* Location icon with tooltip */}
       <button
         className="location-button"
@@ -144,13 +299,13 @@ function Home() {
         <img src={logo} alt="AgriBrain Logo" className="app-logo" />
       </div>
     <div>
-        <h1 className="app-title">AgriBrain</h1>
+        <h1 className="app-title">{t.title}</h1>
     </div>
 
 
       {/* Selected location */}
       {locationName && (
-        <p className="location-text">📍 Selected Location: {locationName}</p>
+        <p className="location-text">{t.selectedLocation}: {locationName}</p>
       )}
 
       {/* Manual input */}
@@ -162,7 +317,7 @@ function Home() {
             value={manualCity}
             onChange={(e) => setManualCity(e.target.value)}
           />
-          <button onClick={fetchManualCity}>Submit</button>
+          <button onClick={fetchManualCity}>{t.submit}</button>
         <button
           className="cancel-manual-btn"
           onClick={() => {
@@ -170,7 +325,7 @@ function Home() {
             setManualCity("");
           }}
         >
-          Cancel
+          {t.cancel}
         </button>
 
         </div>
@@ -211,56 +366,29 @@ function Home() {
       {/* Weather Display */}
       {weather && (
         <div className="weather-cards">
-            <div className="weather-card">
-                <i className="wi wi-thermometer"></i>
-                <h3>Temperature</h3>
-                <p>{weather.temperature}°C</p>
-            </div>
-            <div className="weather-card">
-                <i className="wi wi-strong-wind"></i>
-                <h3>Wind Speed</h3>
-                <p>{weather.windspeed} km/h</p>
-            </div>
-            <div className="weather-card">
-                <i className="wi wi-wind-direction"></i>
-                <h3>Wind Direction</h3>
-                <p>{weather.winddirection}°</p>
-            </div>
-            <div className="weather-card">
-                <i className="wi wi-humidity"></i>
-                <h3>Humidity</h3>
-                <p>{weather.humidity}%</p>
-            </div>
-            <div className="weather-card">
-                <i className="wi wi-raindrop"></i>
-                <h3>Precipitation</h3>
-                <p>{weather.precipitation} mm</p>
-            </div>
-            <div className="weather-card">
-                <i className="wi wi-hot"></i>
-                <h3>Soil Temp</h3>
-                <p>{weather.soilTemp}°C</p>
-            </div>
-            <div className="weather-card">
-                <i className="wi wi-sprinkle"></i>
-                <h3>Soil Moisture</h3>
-                <p>{weather.soilMoisture} m³/m³</p>
-            </div>
+          <div className="weather-card"><i className="wi wi-thermometer"></i><h3>{t.weather.temperature}</h3><p>{weather.temperature}°C</p></div>
+          <div className="weather-card"><i className="wi wi-strong-wind"></i><h3>{t.weather.windspeed}</h3><p>{weather.windspeed} km/h</p></div>
+          <div className="weather-card"><i className="wi wi-wind-direction"></i><h3>{t.weather.winddirection}</h3><p>{weather.winddirection}°</p></div>
+          <div className="weather-card"><i className="wi wi-humidity"></i><h3>{t.weather.humidity}</h3><p>{weather.humidity}%</p></div>
+          <div className="weather-card"><i className="wi wi-raindrop"></i><h3>{t.weather.precipitation}</h3><p>{weather.precipitation} mm</p></div>
+          <div className="weather-card"><i className="wi wi-hot"></i><h3>{t.weather.soilTemp}</h3><p>{weather.soilTemp}°C</p></div>
+          <div className="weather-card"><i className="wi wi-sprinkle"></i><h3>{t.weather.soilMoisture}</h3><p>{weather.soilMoisture} m³/m³</p></div>
         </div>
       )}
 
+      {/* Forecast */}
       {forecast && (
         <div className="forecast-section">
-          <h2>7-Day Forecast</h2>
+          <h2>{t.forecast}</h2>
           <div className="forecast-cards">
             {forecast.time.map((day, index) => (
               <div key={day} className="forecast-card">
                 <p className="forecast-date">{day}</p>
                 <i className={`wi ${getWeatherIcon(forecast.weathercode[index])}`}></i>
-                <p>Max: {forecast.temperature_2m_max[index]}°C</p>
-                <p>Min: {forecast.temperature_2m_min[index]}°C</p>
-                <p>Rain: {forecast.precipitation_sum[index]} mm</p>
-                <p>Wind: {forecast.windspeed_10m_max[index]} km/h</p>
+                <p>{t.max}: {forecast.temperature_2m_max[index]}°C</p>
+                <p>{t.min}: {forecast.temperature_2m_min[index]}°C</p>
+                <p>{t.rain}: {forecast.precipitation_sum[index]} mm</p>
+                <p>{t.wind}: {forecast.windspeed_10m_max[index]} km/h</p>
               </div>
             ))}
           </div>
@@ -269,39 +397,22 @@ function Home() {
 
       {/* Navigation Buttons */}
       <div className="feature-buttons">
-        <button
-          className="feature-btn"
-          onClick={() => navigate("/crop-planner", { state: { lat, lon } })}
-        >
-          <FaSeedling /> Crop Planner
+        <button className="feature-btn" onClick={() => navigate("/crop-planner", { state: { lat, lon, language:selectedLanguage } })}>
+          <FaSeedling /> {t.cropPlanner}
         </button>
-        <button
-          className="feature-btn"
-          onClick={() =>
-            navigate("/government-schemes", {
-              state: { stateName: locationName.split(",").slice(-2, -1)[0] || "" },
-            })
-          }
-        >
-          <FaLandmark /> Government Schemes
+        <button className="feature-btn" onClick={() => navigate("/government-schemes", { state: { stateName: locationName.split(",").slice(-2, -1)[0] || "", language:selectedLanguage } })}>
+          <FaLandmark /> {t.govtSchemes}
         </button>
       </div>
-
 
       {/* Popup */}
       {showPopup && (
         <div className="popup-overlay" onClick={() => setShowPopup(false)}>
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Select Location Method</h3>
-            <button onClick={() => { getCurrentLocation(); setShowPopup(false); }}>
-                Use Current Location
-            </button>
-            <button onClick={() => { setMode("manual"); setShowPopup(false); }}>
-              Type Manually
-            </button>
-            <button onClick={() => { setMode("map"); setShowMap(true); setShowPopup(false); }}>
-              Select on Map
-            </button>
+            <h3>{t.selectLocationMethod}</h3>
+            <button onClick={() => { getCurrentLocation(); setShowPopup(false); }}>{t.useCurrent}</button>
+            <button onClick={() => { setMode("manual"); setShowPopup(false); }}>{t.typeManually}</button>
+            <button onClick={() => { setMode("map"); setShowMap(true); setShowPopup(false); }}>{t.selectOnMap}</button>
           </div>
         </div>
       )}

@@ -1,87 +1,218 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../../App.css";
 import "../Schemes/Schemes.css";
 
 function Schemes() {
+
+  const translations = {
+    english: {
+      title: "🏛 Government Schemes",
+      description: "View agriculture-related schemes and subsidies available for your region.",
+      inputPlaceholder: "Describe your needs...",
+      submit: "Submit",
+      back: "⬅ Back",
+      loading: "Loading...",
+      schemeName: "Scheme Name",
+      reason: "Reason",
+      link: "Link",
+      checkEligibility: "Check Eligibility",
+      submitEligibility: "Submit Eligibility",
+      recommendationTitle: "Recommendation",
+      linkText: "Link",
+      alertEnterNeeds: "Please enter your needs",
+      alertFetchError: "Error fetching schemes",
+      alertEligibilityError: "Error fetching eligibility questions",
+      alertCheckError: "Error checking eligibility",
+      yes: "Yes", no: "No" 
+    },
+    hindi: {
+      title: "🏛 सरकारी योजनाएँ",
+      description: "अपने क्षेत्र में उपलब्ध कृषि संबंधित योजनाओं और सब्सिडी देखें।",
+      inputPlaceholder: "अपनी आवश्यकताओं का विवरण दें...",
+      submit: "जमा करें",
+      back: "⬅ वापस",
+      loading: "लोड हो रहा है...",
+      schemeName: "योजना का नाम",
+      reason: "कारण",
+      link: "लिंक",
+      checkEligibility: "पात्रता जाँचें",
+      submitEligibility: "पात्रता जमा करें",
+      recommendationTitle: "सिफ़ारिश",
+      linkText: "लिंक",
+      alertEnterNeeds: "कृपया अपनी आवश्यकताएँ दर्ज करें",
+      alertFetchError: "योजनाएँ लाने में त्रुटि",
+      alertEligibilityError: "पात्रता प्रश्न लाने में त्रुटि",
+      alertCheckError: "पात्रता जाँच में त्रुटि",
+      yes: "हाँ", no: "नहीं" 
+    },
+    tamil: {
+      title: "🏛 அரசு திட்டங்கள்",
+      description: "உங்கள் பிரதேசத்திற்கு கிடைக்கக்கூடிய விவசாய தொடர்புடைய திட்டங்கள் மற்றும் உதவித்தொகைகளைப் பார்க்கவும்.",
+      inputPlaceholder: "உங்கள் தேவைகளை விவரிக்கவும்...",
+      submit: "சமர்ப்பிக்கவும்",
+      back: "⬅ பின்னுக்கு",
+      loading: "போடுகிறது...",
+      schemeName: "திட்டத்தின் பெயர்",
+      reason: "காரணம்",
+      link: "இணைப்பு",
+      checkEligibility: "தகுதி சரிபார்க்கவும்",
+      submitEligibility: "தகுதி சமர்ப்பிக்கவும்",
+      recommendationTitle: "பரிந்துரை",
+      linkText: "இணைப்பு",
+      alertEnterNeeds: "தயவுசெய்து உங்கள் தேவைகளை உள்ளிடவும்",
+      alertFetchError: "திட்டங்களை பெறுவதில் பிழை",
+      alertEligibilityError: "தகுதி கேள்விகளை பெறுவதில் பிழை",
+      alertCheckError: "தகுதியை சரிபார்ப்பதில் பிழை",
+      yes: "ஆம்", no: "இல்லை"
+    },
+    telugu: {
+      title: "🏛 ప్రభుత్వ పథకాలు",
+      description: "మీ ప్రాంతంలో అందుబాటులో ఉన్న వ్యవసాయ సంబంధిత పథకాలు మరియు సబ్సిడీలను వీక్షించండి.",
+      inputPlaceholder: "మీ అవసరాలను వివరించండి...",
+      submit: "సమర్పించండి",
+      back: "⬅ వెనక్కి",
+      loading: "లోడింగ్...",
+      schemeName: "యోజన పేరు",
+      reason: "కారణం",
+      link: "లింక్", 
+      checkEligibility: "అర్హతను తనిఖీ చేయండి",
+      submitEligibility: "అర్హత సమర్పించండి",
+      recommendationTitle: "సిఫార్సు",
+      linkText: "లింక్",
+      alertEnterNeeds: "దయచేసి మీ అవసరాలను నమోదు చేయండి",
+      alertFetchError: "పథకాలను పొందడంలో లోపం",
+      alertEligibilityError: "అర్హత ప్రశ్నలను పొందడంలో లోపం",
+      alertCheckError: "అర్హత తనిఖీలో లోపం",
+      yes: "అవును", no: "కాదు" 
+    },
+    punjabi: {
+      title: "🏛 ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ",
+      description: "ਆਪਣੇ ਖੇਤਰ ਲਈ ਉਪਲਬਧ ਖੇਤੀ-ਸਬੰਧੀ ਯੋਜਨਾਵਾਂ ਅਤੇ ਸਬਸਿਡੀਆਂ ਵੇਖੋ।",
+      inputPlaceholder: "ਆਪਣੀਆਂ ਜ਼ਰੂਰਤਾਂ ਬਿਆਨ ਕਰੋ...",
+      submit: "ਜਮ੍ਹਾ ਕਰੋ",
+      back: "⬅ ਵਾਪਸ",
+      loading: "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+      schemeName: "ਯੋਜਨਾ ਦਾ ਨਾਮ",
+      reason: "ਕਾਰਣ",
+      link: "ਲਿੰਕ",
+      checkEligibility: "ਅਰਹਿਤਾ ਚੈੱਕ ਕਰੋ",
+      submitEligibility: "ਅਰਹਿਤਾ ਜਮ੍ਹਾਂ ਕਰੋ",
+      recommendationTitle: "ਸਿਫਾਰਸ਼",
+      linkText: "ਲਿੰਕ",
+      alertEnterNeeds: "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਜ਼ਰੂਰਤਾਂ ਦਰਜ ਕਰੋ",
+      alertFetchError: "ਯੋਜਨਾਵਾਂ ਲਿਆਉਣ ਵਿੱਚ ਗਲਤੀ",
+      alertEligibilityError: "ਅਰਹਿਤਾ ਪ੍ਰਸ਼ਨਾਂ ਨੂੰ ਲਿਆਉਣ ਵਿੱਚ ਗਲਤੀ",
+      alertCheckError: "ਅਰਹਿਤਾ ਜਾਂਚਣ ਵਿੱਚ ਗਲਤੀ",
+      yes: "ਹਾਂ", no: "ਨਹੀਂ"
+    },
+    marathi: {
+      title: "🏛 सरकारी योजना",
+      description: "आपल्या क्षेत्रासाठी उपलब्ध कृषी-संबंधित योजना आणि सबसिडी पहा.",
+      inputPlaceholder: "आपल्या गरजांचा तपशील द्या...",
+      submit: "सबमिट करा",
+      back: "⬅ मागे",
+      loading: "लोड करत आहे...",
+      schemeName: "योजनेचे नाव",
+      reason: "कारण",
+      link: "दुवा",
+      checkEligibility: "अर्हता तपासा",
+      submitEligibility: "अर्हता सबमिट करा",
+      recommendationTitle: "शिफारस",
+      linkText: "लिंक",
+      alertEnterNeeds: "कृपया आपल्या गरजा प्रविष्ट करा",
+      alertFetchError: "योजना आणण्यात त्रुटी",
+      alertEligibilityError: "अर्हता प्रश्न आणण्यात त्रुटी",
+      alertCheckError: "अर्हता तपासण्यात त्रुटी",
+      yes: "होय", no: "नाही" 
+    }
+};
+
+
   const navigate = useNavigate();
   const location = useLocation();
-  const stateFromLocation = location.state?.stateName || "";
+  const { stateName, language } = location.state || {};
+  const t = translations[language || "english"];
   const [inputText, setInputText] = useState("");
-  const [schemes, setSchemes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [schemes, setSchemes] = useState(null);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loadingCheck, setLoadingCheck] = useState(false);
+  const [loadingEligibility, setLoadingEligibility] = useState(false);
   const [eligibilityQuestions, setEligibilityQuestions] = useState(null);
   const [responses, setResponses] = useState({});
   const [recommendation, setRecommendation] = useState(null);
 
   const handleSubmit = async () => {
     if (!inputText.trim()) return alert("Please enter your needs");
-    setLoading(true);
+    setLoadingSubmit(true);
     try {
-      console.log("State from location:", stateFromLocation);
-      const res = [
-        { scheme: "PM-Kisan Samman Nidhi", url: "https://pmkisan.gov.in" },
-        { scheme: "Kisan Credit Card", url: "https://www.nabard.org" }
-      ];
-      setSchemes(res);
+      const response = await axios.post("http://127.0.0.1:5000/rec_schemes.json", {
+        location: stateName,
+        query: inputText,
+        top_k: 3,
+        language: language
+      },
+    {
+    withCredentials: true   // 👈 correct place
+  });
+      setSchemes(response.data);
     } catch (err) {
       console.error(err);
       alert("Error fetching schemes");
+    } finally {
+      setLoadingSubmit(false);
     }
-    setLoading(false);
   };
 
   const checkEligibility = async () => {
+    if (!schemes) return;
+    setLoadingCheck(true);
     try {
-      const mockQuestions = {
-        "National Scheme of Welfare of Fishermen": {
-          "Is the applicant a member of a functional local fishers cooperative society/Federation/any other registered body?": {
-            answer: "Yes"
-          },
-          "Is the applicant Below Poverty Line (BPL)?": {
-            answer: "Yes",
-            follow_ups: {
-              "Is the applicant between 18 and 60 years of age?": "Yes"
-            }
-          },
-          "Is the beneficiary fisher willing to save Rs. 1500 over a period of 9 months during the fishing season annually towards their contribution with a bank designated by the State/UT Department of Fisheries?": {
-            answer: "Yes"
-          }
-        }
-      };
-      // Initialize all responses to "No"
+      const response = await axios.post("http://127.0.0.1:5000/questions.json", {
+        rec_scheme : schemes,
+        language: language
+      }, {
+        withCredentials: true   // 👈 correct place
+      });
+      const questions = response.data;
+
       const defaultResponses = {};
-      Object.entries(mockQuestions).forEach(([schemeName, questionSet]) => {
+      Object.entries(questions).forEach(([schemeName, questionSet]) => {
         defaultResponses[schemeName] = {};
         Object.entries(questionSet).forEach(([question, data]) => {
           defaultResponses[schemeName][question] = { answer: "No" };
           if (data.follow_ups) {
             defaultResponses[schemeName][question].follow_ups = {};
-            Object.keys(data.follow_ups).forEach(fq => {
+            Object.keys(data.follow_ups).forEach((fq) => {
               defaultResponses[schemeName][question].follow_ups[fq] = "No";
             });
           }
         });
       });
+      console.log("Default Responses:", defaultResponses);
       setResponses(defaultResponses);
-      setEligibilityQuestions(mockQuestions);
+      setEligibilityQuestions(questions);
     } catch (err) {
       console.error(err);
+      alert("Error fetching eligibility questions");
+    } finally {
+      setLoadingCheck(false);
     }
   };
 
   const handleResponse = (scheme, question, answer) => {
-    setResponses(prev => ({
+    setResponses((prev) => ({
       ...prev,
       [scheme]: {
         ...prev[scheme],
-        [question]: { ...prev[scheme]?.[question], answer }
-      }
+        [question]: { ...prev[scheme]?.[question], answer },
+      },
     }));
   };
 
   const handleFollowUpResponse = (scheme, question, followQ, answer) => {
-    setResponses(prev => ({
+    setResponses((prev) => ({
       ...prev,
       [scheme]: {
         ...prev[scheme],
@@ -89,67 +220,83 @@ function Schemes() {
           ...prev[scheme]?.[question],
           follow_ups: {
             ...prev[scheme]?.[question]?.follow_ups,
-            [followQ]: answer
-          }
-        }
-      }
+            [followQ]: answer,
+          },
+        },
+      },
     }));
   };
 
   const submitEligibility = async () => {
+    setLoadingEligibility(true);
     try {
-      console.log("Submitting eligibility responses:", responses);
-      setRecommendation("You are eligible for PM-Kisan Samman Nidhi");
+      const response = await axios.post("http://127.0.0.1:5000/check_schemes.json", {
+        exp_qa: eligibilityQuestions,
+        user_qa: responses,
+      });
+      console.log(response.data);
+      setRecommendation(response.data);
     } catch (err) {
       console.error(err);
+      alert("Error checking eligibility");
+    } finally {
+      setLoadingEligibility(false);
     }
   };
 
   return (
     <div className="page-container">
-      <h1>🏛 Government Schemes</h1>
-      <p style={{ width: "95%", marginLeft: "25px", marginRight: "25px", padding: "10px", marginBottom: "10px" }}
-        >View agriculture-related schemes and subsidies available for your region.</p>
+      <h1>{t.title}</h1>
+      <p style={{ width: "95%", margin: "0 25px 10px", padding: "10px" }}>
+        {t.description}
+      </p>
 
       <textarea
         value={inputText}
-        onChange={e => setInputText(e.target.value)}
+        onChange={(e) => setInputText(e.target.value)}
         placeholder="Describe your needs..."
         rows={4}
-        style={{ width: "95%", marginLeft: "25px", marginRight: "25px", padding: "10px", marginBottom: "10px" }}
+        style={{ width: "95%", margin: "0 25px 10px", padding: "10px" }}
       />
 
       <div className="button-row">
-        <button className="submit-btn" onClick={handleSubmit} disabled={loading}>
-          {loading ? "Loading..." : "Submit"}
+        <button className="submit-btn" onClick={handleSubmit} disabled={loadingSubmit}>
+          {loadingSubmit ? t.loading : t.submit}
         </button>
-        <button className="back-btn" onClick={() => navigate("/")}>⬅ Back</button>
+        <button className="back-btn" onClick={() => navigate("/")}>{t.back}</button>
       </div>
 
-      {schemes.length > 0 && (
+      {schemes && (
         <div style={{ marginTop: "20px" }}>
-          <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <table style={{ borderCollapse: "collapse", width: "95%", marginLeft: "25px" }}>
             <thead>
               <tr>
                 <th style={{ border: "1px solid #ccc", padding: "8px" }}>#</th>
-                <th style={{ border: "1px solid #ccc", padding: "8px" }}>Scheme Name</th>
-                <th style={{ border: "1px solid #ccc", padding: "8px" }}>Link</th>
+                <th style={{ border: "1px solid #ccc", padding: "8px" }}>{t.schemeName}</th>
+                <th style={{ border: "1px solid #ccc", padding: "8px" }}>{t.reason}</th>
+                <th style={{ border: "1px solid #ccc", padding: "8px" }}>{t.link}</th>
               </tr>
             </thead>
             <tbody>
-              {schemes.map((s, idx) => (
+              {Object.entries(schemes).map(([schemeName, details], idx) => (
                 <tr key={idx}>
                   <td style={{ border: "1px solid #ccc", padding: "8px" }}>{idx + 1}</td>
-                  <td style={{ border: "1px solid #ccc", padding: "8px" }}>{s.scheme}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "8px" }}>{schemeName}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "8px" }}>{details.Reason}</td>
                   <td style={{ border: "1px solid #ccc", padding: "8px" }}>
-                    <a href={s.url} target="_blank" rel="noreferrer">{s.url}</a>
+                    <a href={details.URL} target="_blank" rel="noreferrer">{t.link}</a>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button className="submit-btn" style={{ marginLeft: "50px", marginTop: "15px" }} onClick={checkEligibility}>
-            Check Eligibility
+          <button
+            className="submit-btn"
+            style={{ marginLeft: "50px", marginTop: "15px" }}
+            onClick={checkEligibility}
+            disabled={loadingCheck}
+          >
+            {loadingCheck ? t.loading : t.checkEligibility}
           </button>
         </div>
       )}
@@ -165,10 +312,9 @@ function Schemes() {
                     <input
                       type="checkbox"
                       checked={responses[schemeName]?.[question]?.answer === "Yes"}
-                      onChange={(e) => {
-                        const ans = e.target.checked ? "Yes" : "No";
-                        handleResponse(schemeName, question, ans);
-                      }}
+                      onChange={(e) =>
+                        handleResponse(schemeName, question, e.target.checked ? "Yes" : "No")
+                      }
                     />
                     {question}
                   </label>
@@ -199,14 +345,30 @@ function Schemes() {
               ))}
             </div>
           ))}
-          <button className="submit-btn" style={{ marginLeft: "50px", marginTop: "15px" }} onClick={submitEligibility}>Submit Eligibility</button>
+          <button
+            className="submit-btn"
+            style={{ marginLeft: "15px", marginTop: "15px" }}
+            onClick={submitEligibility}
+            disabled={loadingEligibility}
+          >
+            {loadingEligibility ? t.loading : t.submitEligibility}
+          </button>
         </div>
       )}
 
       {recommendation && (
-        <div style={{ marginTop: "20px", padding: "10px", background: "#e8f5e9", borderRadius: "8px" }}>
-          <h3>Recommendation</h3>
-          <p>{recommendation}</p>
+        <div className="recommendation-card">
+          <h3 className="rec-title">{t.recommendationTitle}</h3>
+          <div className="rec-list">
+            {Object.entries(recommendation).map(([scheme, status]) => (
+              <div key={scheme} className="rec-item">
+                <span className="rec-scheme">{scheme}</span>
+                <span className={`rec-status ${status === "Yes" ? "yes" : "no"}`}>
+                  {status === "Yes" ? t.yes : t.no}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

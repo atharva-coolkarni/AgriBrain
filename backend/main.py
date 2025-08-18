@@ -189,7 +189,7 @@ def recommend_crop():
             "daily": ["temperature_2m_max", "temperature_2m_min", "rain_sum"],
             "timezone": "auto",
         }
-        lang_param="english"
+        lang_param=user_input.get('language', 'english')
         historical_response = requests.get(HISTORICAL_WEATHER_URL, params=historical_params)
         forecast_response = requests.get(FORECAST_WEATHER_URL, params=forecast_params)
 

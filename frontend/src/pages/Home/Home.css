@@ -1,3 +1,33 @@
+/* === Language Dropdown === */
+.language-selector {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.language-selector select {
+  background: white;
+  border: 2px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  min-width: 180px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.language-selector select:hover {
+  border-color: #8bc34a;
+  transform: translateY(-2px);
+}
+
+.language-selector select:focus {
+  outline: none;
+  border-color: #388e3c;
+  box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.3);
+}
 
 /* === Weather Grid === */
 
