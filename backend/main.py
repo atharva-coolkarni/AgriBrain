@@ -104,6 +104,13 @@ def get_recommd_json():
     # Convert language to proper code
     lang_code = get_language_code(language)
     print(f"🌍 Language requested: {language} -> Using code: {lang_code}")
+
+    if lang_code != 'en':
+        curr_query = {'query': query}
+        result = translate_dict(curr_query, 'en')
+        # Handle if result is a dict, list, or str
+        if isinstance(result, dict):
+            query = result.get('query', query)
     
     # Store language in session for use in subsequent requests
     
