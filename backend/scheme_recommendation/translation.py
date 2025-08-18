@@ -19,7 +19,7 @@ def call_gemini_api(prompt: str) -> str:
         return ""
 
 
-# --- Translation Agent ---
+# --- Translation Agent (for English to other languages) ---
 class TranslationAgent:
     def __init__(self, target_lang):
         self.target_lang = target_lang
@@ -223,7 +223,89 @@ Write the translation using ONLY {self.target_lang} native script:
         return text.strip()
 
 
-# --- Main recursive function ---
+# --- English Translation Agent (for other languages to English) ---
+class EnglishTranslationAgent:
+    def __init__(self):
+        pass
+    
+    def detect_and_translate_to_english(self, text: str) -> str:
+        """Detect language and translate to English"""
+        prompt = f"""
+You are a language detection and translation expert. Your task is to:
+
+1. DETECT the language of the given text
+2. TRANSLATE it accurately to English
+
+IMPORTANT RULES:
+1. First detect what language the text is in
+2. Then provide a natural, accurate English translation
+3. Maintain the original meaning and context
+4. If the text is already in English, return it as-is
+5. Return ONLY the English translation, no explanations or additional text
+6. Do not include language detection information in your response
+
+Text to translate: {text}
+
+English translation:
+"""
+        
+        output = call_gemini_api(prompt).strip()
+        output = self._clean_output(output)
+        
+        # If translation failed or is empty, return original text
+        if not output:
+            print(f"English translation failed for: {text}")
+            return text
+            
+        return output
+    
+    def _clean_output(self, text: str) -> str:
+        """Clean the API response text"""
+        # Remove code block markers
+        if text.startswith("```"):
+            lines = text.splitlines()
+            if len(lines) > 1:
+                text = "\n".join(lines[1:])
+        if text.endswith("```"):
+            lines = text.splitlines()
+            if len(lines) > 1:
+                text = "\n".join(lines[:-1])
+        
+        # Remove extra quotes if present
+        text = text.strip()
+        if text.startswith('"') and text.endswith('"'):
+            text = text[1:-1]
+        if text.startswith("'") and text.endswith("'"):
+            text = text[1:-1]
+            
+        return text.strip()
+
+
+# --- Function to translate query to English ---
+def translate_query_to_english(content_dict):
+    """
+    Translate query value from other languages to English
+    Expected format: {'query': 'text in other language'}
+    """
+    if not isinstance(content_dict, dict) or 'query' not in content_dict:
+        print("❌ Invalid format: Expected {'query': 'text'}")
+        return content_dict
+    
+    agent = EnglishTranslationAgent()
+    original_query = content_dict['query']
+    
+    print(f"🔍 Original query: {original_query}")
+    
+    # Translate to English
+    translated_query = agent.detect_and_translate_to_english(original_query)
+    
+    print(f"🌍 Translated query: {translated_query}")
+    
+    # Return the updated dictionary
+    return {'query': translated_query}
+
+
+# --- Main recursive function (for English to other languages) ---
 def translate_nested_dict(data, agent: TranslationAgent):
     if isinstance(data, dict):
         new_dict = {}
@@ -271,10 +353,33 @@ def translate_nested_dict(data, agent: TranslationAgent):
         return data
 
 
-# --- Example Usage ---
+# --- Main Translation Function ---
 def translate_dict(content_dict, language):
-    agent = TranslationAgent(target_lang=language)
-    translated_dict = translate_nested_dict(content_dict, agent)
-    return translated_dict
+    """
+    Main translation function that handles both directions:
+    1. English to other languages (existing functionality)
+    2. Other languages to English (new functionality)
+    
+    Args:
+        content_dict: Dictionary to translate
+        language: Target language ('english'/'en' for translating TO English)
+    
+    Returns:
+        Translated dictionary
+    """
+    
+    # Check if we need to translate TO English
+    if language.lower() in ['english', 'en', 'eng']:
+        print("🔄 Translating to English...")
+        return translate_query_to_english(content_dict)
+    
+    # Otherwise, translate FROM English to other language (existing code)
+    else:
+        print(f"🔄 Translating to {language}...")
+        agent = TranslationAgent(target_lang=language)
+        translated_dict = translate_nested_dict(content_dict, agent)
+        return translated_dict
 
 
+
+    
