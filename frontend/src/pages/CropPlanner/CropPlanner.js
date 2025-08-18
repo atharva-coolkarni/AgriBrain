@@ -535,7 +535,7 @@ function CropPlanner() {
         {expanded === 2 && (
           <div className="accordion-content">
             <label>{t.landArea}:</label>
-            <input type="number" name="landArea" placeholder={t.landAreaPlaceholder} value={formData.landArea} onChange={handleChange} />
+            <input type="number" name="landArea" placeholder={t.landAreaPlaceholder} value={formData.landArea} onChange={handleChange} step={1} min={0} />
 
             <label>{t.budget}:</label>
             <select name="budget" value={formData.budget} onChange={handleChange}>

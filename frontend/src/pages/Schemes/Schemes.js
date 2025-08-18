@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import axios from "axios";
 import "../../App.css";
 import "../Schemes/Schemes.css";
@@ -143,28 +144,76 @@ function Schemes() {
   const [responses, setResponses] = useState({});
   const [recommendation, setRecommendation] = useState(null);
 
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef(null);
+
+  // Initialize Speech Recognition
+useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    recognitionRef.current = new SpeechRecognition();
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+
+    switch (language) {
+      case "hindi": recognitionRef.current.lang = "hi-IN"; break;
+      case "tamil": recognitionRef.current.lang = "ta-IN"; break;
+      case "telugu": recognitionRef.current.lang = "te-IN"; break;
+      case "punjabi": recognitionRef.current.lang = "pa-IN"; break;
+      case "marathi": recognitionRef.current.lang = "mr-IN"; break;
+      default: recognitionRef.current.lang = "en-US";
+    }
+
+    recognitionRef.current.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInputText(transcript);
+    };
+
+    recognitionRef.current.onend = () => {
+      if (listening) recognitionRef.current.start();
+    };
+  }, [language]);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) return;
+    if (!listening) {
+      recognitionRef.current.start();
+    } else {
+      recognitionRef.current.stop();
+    }
+    setListening(prev => !prev);
+  };
+
   const handleSubmit = async () => {
-    if (!inputText.trim()) return alert("Please enter your needs");
+    if (!inputText.trim()) return alert(t.alertEnterNeeds);
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setListening(false);
+    }
     setLoadingSubmit(true);
     try {
-      const response = await axios.post("http://127.0.0.1:5000/rec_schemes.json", {
-        location: stateName,
-        query: inputText,
-        top_k: 3,
-        language: language
-      },
-    {
-    withCredentials: true   // 👈 correct place
-  });
+      const response = await axios.post(
+        "http://127.0.0.1:5000/rec_schemes.json",
+        { location: stateName, query: inputText, top_k: 3, language },
+        { withCredentials: true }
+      );
       setSchemes(response.data);
     } catch (err) {
       console.error(err);
-      alert("Error fetching schemes");
+      alert(t.alertFetchError);
     } finally {
       setLoadingSubmit(false);
+      // ensure microphone is muted after submit
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        setListening(false);
+      }
     }
   };
-
   const checkEligibility = async () => {
     if (!schemes) return;
     setLoadingCheck(true);
@@ -250,15 +299,32 @@ function Schemes() {
       <p style={{ width: "95%", margin: "0 25px 10px", padding: "10px" }}>
         {t.description}
       </p>
+      <div style={{ position: "relative", width: "100%" }}>
+        <textarea
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder={t.inputPlaceholder}
+          rows={4}
+          style={{ width: "95%", margin: "0 25px 10px", padding: "10px" }}
+        />
 
-      <textarea
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-        placeholder="Describe your needs..."
-        rows={4}
-        style={{ width: "95%", margin: "0 25px 10px", padding: "10px" }}
-      />
-
+        <button
+            onClick={toggleListening}
+            style={{
+              position: "absolute",
+              right: "5px",
+              top: "20%",
+              transform: "translateY(-50%)",
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "20px",
+              color: listening ? "black" : "red"
+            }}
+          >
+            {listening ? <FaMicrophone /> : <FaMicrophoneSlash />}
+          </button>
+      </div>
       <div className="button-row">
         <button className="submit-btn" onClick={handleSubmit} disabled={loadingSubmit}>
           {loadingSubmit ? t.loading : t.submit}
