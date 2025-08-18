@@ -512,9 +512,9 @@ function CropPlanner() {
             <label>{t.soilEC}:</label>
             <select name="soilEC" value={formData.soilEC} onChange={handleChange}>
               <option value="">{t.selectOption}</option>
-              <option value="Low">{t.ecOptions.Low}</option>
-              <option value="Medium">{t.ecOptions.Medium}</option>
-              <option value="High">{t.ecOptions.High}</option>
+              <option value="Low (0-0.8 ds/m)">{t.ecOptions.Low}</option>
+              <option value="Medium (0.8-1.2 ds/m)">{t.ecOptions.Medium}</option>
+              <option value="High (>2.0 ds/m)">{t.ecOptions.High}</option>
             </select>
 
             <label>{t.landTopo}:</label>
@@ -535,14 +535,14 @@ function CropPlanner() {
         {expanded === 2 && (
           <div className="accordion-content">
             <label>{t.landArea}:</label>
-            <input type="number" name="landArea" value={formData.landArea} onChange={handleChange} />
+            <input type="number" name="landArea" placeholder={t.landAreaPlaceholder} value={formData.landArea} onChange={handleChange} />
 
             <label>{t.budget}:</label>
             <select name="budget" value={formData.budget} onChange={handleChange}>
               <option value="">{t.selectOption}</option>
-              <option value="Low">{t.budgetOptions.Low}</option>
-              <option value="Medium">{t.budgetOptions.Medium}</option>
-              <option value="High">{t.budgetOptions.High}</option>
+              <option value="Low (₹0 - ₹50,000)">{t.budgetOptions.Low}</option>
+              <option value="Medium (₹50,001 - ₹2,00,000)">{t.budgetOptions.Medium}</option>
+              <option value="High (>₹2,00,000)">{t.budgetOptions.High}</option>
             </select>
 
             <label>{t.labor}:</label>
@@ -568,10 +568,10 @@ function CropPlanner() {
             </select>
 
             <label>{t.fertilizer}:</label>
-            <input type="text" name="fertilizer" value={formData.fertilizer} onChange={handleChange} />
+            <input type="text" name="fertilizer" placeholder={t.fertilizerPlaceholder} value={formData.fertilizer} onChange={handleChange} />
 
             <label>{t.pestDisease}:</label>
-            <input type="text" name="pestDisease" value={formData.pestDisease} onChange={handleChange} />
+            <input type="text" name="pestDisease" placeholder={t.pestDiseasePlaceholder} value={formData.pestDisease} onChange={handleChange} />
           </div>
         )}
       </div>
