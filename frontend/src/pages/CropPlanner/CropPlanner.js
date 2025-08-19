@@ -491,16 +491,12 @@ function CropPlanner() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      console.log(formData);
       const res = await fetch("http://127.0.0.1:5000/recommend-crop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log("Form Data:", formData);
-      console.log(`Response Data: ${JSON.stringify(data)}`);
-      setResponseData(data);
       setLoading(false);
     } catch (error) {
       console.error("Error:", error);

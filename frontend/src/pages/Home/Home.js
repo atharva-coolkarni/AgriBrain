@@ -2,7 +2,7 @@ import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState } from "react";
-import { FaLandmark, FaMapMarkerAlt, FaSeedling } from "react-icons/fa";
+import { FaLandmark, FaMapMarkerAlt, FaSeedling, FaGithub, FaReact, FaPython, FaLeaf } from "react-icons/fa";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import "weather-icons/css/weather-icons.css";
@@ -44,6 +44,10 @@ const translations = {
     min: "Min",
     rain: "Rain",
     wind: "Wind",
+    builtBy: "🌱 AgriBrain |",
+    team:" Built by Team MetaCore  ",
+      members: "Team Members: Atharva Kulkarni • Vedant Kulkarni • Vishwajeet Pawar",
+      github: "GitHub Repo",
   },
   hindi: {
     title: "एग्रीब्रेन",
@@ -65,12 +69,17 @@ const translations = {
       precipitation: "वर्षा",
       soilTemp: "मृदा तापमान",
       soilMoisture: "मृदा नमी",
+      
     },
     forecast: "7-दिवसीय पूर्वानुमान",
     max: "अधिकतम",
     min: "न्यूनतम",
     rain: "वर्षा",
     wind: "पवन",
+    builtBy: "🌱 एग्रीब्रेन |",
+    team:" टीम मेटाकोर द्वारा निर्मित  ",
+      members: "टीम सदस्य: अथर्व कुलकर्णी • वेदांत कुलकर्णी • विश्वजीत पवार",
+      github: "गिटहब रिपॉजिटरी",
   },
   marathi: {
     title: "एग्रीब्रेन",
@@ -98,6 +107,10 @@ const translations = {
     min: "किमान",
     rain: "पाऊस",
     wind: "वारा",
+    builtBy: "🌱 अ‍ॅग्रीब्रेन |",
+    team:" टीम मेटाकोर द्वारे विकसित  ",
+      members: "टीम सदस्य: अथर्व कुलकर्णी • वेदांत कुलकर्णी • विश्वजीत पवार",
+      github: "GitHub रेपो",
   },
   tamil: {
     title: "அக்ரிப்ரெயின்",
@@ -125,6 +138,10 @@ const translations = {
     min: "குறைந்தபட்சம்",
     rain: "மழை",
     wind: "காற்று",
+    builtBy: "🌱 அக்‌ரிபிரெயின் |",
+    team:" டீம் மெட்டாகோர் உருவாக்கியது  ",
+      members: "அணி உறுப்பினர்கள்: அதர்வ குல்கர்னி • வேதாந்த் குல்கர்னி • விஸ்வஜீத் பவார்",
+      github: "GitHub Repo",
   },
   punjabi: {
     title: "ਐਗਰੀਬ੍ਰੇਨ",
@@ -152,7 +169,42 @@ const translations = {
     min: "ਘੱਟ ਤੋਂ ਘੱਟ",
     rain: "ਬਰਸਾਤ",
     wind: "ਹਵਾ",
+    builtBy: "🌱 ਐਗ੍ਰੀਬਰੇਨ |",
+    team:" ਟੀਮ ਮੈਟਾਕੋਰ ਦੁਆਰਾ ਬਣਾਇਆ ਗਿਆ  ",
+      members: "ਟੀਮ ਮੈਂਬਰ: ਅਥਰਵਾ ਕੁਲਕਰਨੀ • ਵੇਦਾਂਤ ਕੁਲਕਰਨੀ • ਵਿਸ਼ਵਜੀਤ ਪਵਾਰ",
+      github: "GitHub ਰਿਪੋ",
   },
+  telugu: {
+    title: "అగ్రిబ్రెయిన్",
+    selectedLocation: "📍 ఎంచుకున్న ప్రదేశం:",
+    enterCity: "నగరం నమోదు చేయండి...",
+    submit: "సమర్పించండి",
+    cancel: "రద్దు చేయండి",
+    selectLocationMethod: "ప్రదేశాన్ని ఎంచుకునే విధానం",
+    useCurrent: "ప్రస్తుత ప్రదేశాన్ని వాడండి",
+    typeManually: "మానవీయంగా నమోదు చేయండి",
+    selectOnMap: "పటంలో ఎంచుకోండి",
+    cropPlanner: "పంట ప్రణాళిక",
+    govtSchemes: "ప్రభుత్వ పథకాలు",
+    weather: {
+      temperature: "ఉష్ణోగ్రత",
+      windspeed: "గాలి వేగం",
+      winddirection: "గాలి దిశ",
+      humidity: "తేమ",
+      precipitation: "వర్షపాతం",
+      soilTemp: "మట్టి ఉష్ణోగ్రత",
+      soilMoisture: "మట్టి తేమ",
+    },
+    forecast: "7-రోజుల వాతావరణ అంచనా",
+    max: "గరిష్టం",
+    min: "కనిష్టం",
+    rain: "వర్షం",
+    wind: "గాలి",
+    builtBy: "🌱 అగ్రి బ్రెయిన్ |",
+    team:" టీమ్ మెటాకోర్ నిర్మించింది  ",
+      members: "జట్టు సభ్యులు: అథర్వ కులకర్ణి • వేదాంత్ కులకర్ణి • విశ్వజీత్ పవార్",
+      github: "GitHub రిపో",
+  }
 };
 
 function LocationMarker({ onSelect }) {
@@ -172,9 +224,27 @@ function Home() {
   const [mode, setMode] = useState("default");
   const [manualCity, setManualCity] = useState("");
   const [showMap, setShowMap] = useState(false);
-  const [locationName, setLocationName] = useState("");
+  // const [locationName, setLocationName] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("english");
+  // const [selectedLanguage, setSelectedLanguage] = useState("english");
+  const [locationName, setLocationName] = useState(
+    localStorage.getItem("locationName") || ""
+  );
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    localStorage.getItem("selectedLanguage") || "english"
+  );
+
+  useEffect(() => {
+    localStorage.setItem("selectedLanguage", selectedLanguage);
+  }, [selectedLanguage]);
+
+  // ✅ Save location to localStorage when it changes
+  useEffect(() => {
+    if (locationName) {
+      localStorage.setItem("locationName", locationName);
+    }
+  }, [locationName]);
+
 
   const navigate = useNavigate();
 
@@ -305,7 +375,7 @@ function Home() {
 
       {/* Selected location */}
       {locationName && (
-        <p className="location-text">{t.selectedLocation}: {locationName}</p>
+        <p className="location-text">{t.selectedLocation} {locationName}</p>
       )}
 
       {/* Manual input */}
@@ -416,6 +486,24 @@ function Home() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+          <footer className="footer bg-gray-100 py-6 mt-8 border-t border-gray-300 text-center">
+      <p className="text-lg font-semibold">
+        {t.builtBy}  <strong>{t.team}</strong>
+        <a
+          href="https://github.com/atharva-coolkarni/AgriBrain"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-700 hover:text-black text-xl"
+        >
+            <FaGithub />
+        </a>
+      </p>
+      <p className="text-sm text-gray-600">
+        {t.members}
+      </p>
+    </footer>
     </div>
   );
 }

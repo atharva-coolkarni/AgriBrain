@@ -239,7 +239,6 @@ useEffect(() => {
           }
         });
       });
-      console.log("Default Responses:", defaultResponses);
       setResponses(defaultResponses);
       setEligibilityQuestions(questions);
     } catch (err) {
@@ -283,7 +282,6 @@ useEffect(() => {
         exp_qa: eligibilityQuestions,
         user_qa: responses,
       });
-      console.log(response.data);
       setRecommendation(response.data);
     } catch (err) {
       console.error(err);
