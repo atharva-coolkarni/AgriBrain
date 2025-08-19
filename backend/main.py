@@ -4,6 +4,8 @@ import requests
 import os
 from pymongo import MongoClient
 import secrets
+import psutil
+import gc
 from scheme_recommendation.translation import translate_dict
 from scheme_recommendation.fetch_schemes import create_database
 from scheme_recommendation.recommendation import (
@@ -41,6 +43,12 @@ LANGUAGE_MAP = {
     'malayalam': 'ml',
     'punjabi': 'pa',
 }
+
+def log_memory(tag=""):
+    process = psutil.Process()
+    mem_mb = process.memory_info().rss / 1024 / 1024
+    print(f"📊 Memory {tag}: {mem_mb:.2f} MB")
+
 
 def get_language_code(language_input):
     """Convert language name to proper language code"""
@@ -172,8 +180,9 @@ def check_schemes():
     return jsonify(comparison_result)
 
 
-@app.route("/recommend-crop", methods=["POST"])
+@app.route("/recommend_crop", methods=["POST"])
 def recommend_crop():
+    log_memory("before recommendation")
     crops_collection = fetch_schemes_as_name_keyed_dict(
         mongo_uri, "agri_marketplace", "crops"
     )
@@ -230,7 +239,9 @@ def recommend_crop():
     }
     crop_plan_report = generate_crop_plan_with_gemini(best_crop, user_input, weather_data_combined, lang_param)
     crop_details = crop_data_translator(best_crop, lang_param)
- 
+    log_memory("after recommendation")
+    gc.collect()  # free unused memory
+
     return jsonify(
         {
             "message": "Crop recommendation and plan generated successfully!",
