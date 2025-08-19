@@ -492,8 +492,7 @@ function CropPlanner() {
     try {
       setLoading(true);
       console.log(formData);
-      
-      
+
       const res = await fetch(
         `${API_URL}/recommend-crop`,
         {
@@ -503,6 +502,7 @@ function CropPlanner() {
         }
       );
       const data = await res.json();
+      setResponseData(data); // <-- Add this line
       setLoading(false);
     } catch (error) {
       console.error("Error:", error);

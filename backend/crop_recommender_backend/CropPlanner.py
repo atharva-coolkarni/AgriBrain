@@ -1,33 +1,20 @@
+# CropPlanner.py
+
 import os
 import re
 import json
-import requests
-from flask_cors import CORS
-from dotenv import load_dotenv
 import gc
-# from pymongo import MongoClient
+import requests
+from dotenv import load_dotenv
+# from flask_cors import CORS  # not needed here
 
-# Load environment variables
+# Load environment variables from .env if present
 load_dotenv()
 
-# # MongoDB setup
-# db_client = None
-# crops_collection = None
-
-# mongo_uri = os.getenv("MONGO_URI")
-# if not mongo_uri:
-#     raise RuntimeError("MONGO_URI environment variable not set. Please check your .env file.")
-
-# try:
-#     db_client = MongoClient(mongo_uri)
-#     db = db_client.get_database("agri_marketplace")  # Database name
-#     crops_collection = db.get_collection("crops")
-#     print("Connected to MongoDB successfully!")
-# except Exception as e:
-#     print(f"Failed to connect to MongoDB: {e}")
-
 # Gemini API config
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+GEMINI_API_URL = (
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+)
 GEMINI_API_KEY = os.environ.get("VISHU_GEMINI_API_KEY")
 
 # Weather API URLs
@@ -36,24 +23,48 @@ FORECAST_WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 
 
 def calculate_score(crop, user_input, historical_data):
+    """
+    Lightweight, transparent scoring with tolerant string matching.
+
+    - Soil type: keyword / substring-based matching
+    - Soil pH: inside crop's min-max range
+    - Climate: historical avg temp/rain vs crop min/max
+    - Irrigation: keyword / substring-based matching
+    """
     score = 0.0
 
     # --- Soil type match (substring/keyword based) ---
-    user_soil = user_input["soilType"].lower()
-    crop_soils = [s.lower() for s in crop.get("soil_type", []) if isinstance(s, str)]
+    user_soil = str(user_input.get("soilType", "")).lower().strip()
+    crop_soils = [str(s).lower() for s in crop.get("soil_type", []) if isinstance(s, str)]
 
-    if any(user_soil in cs or cs in user_soil for cs in crop_soils):
-        score += 50
-    else:
-        for s_type in re.split(r'[, ]+', user_soil):
-            if any(s_type in cs or cs in s_type for cs in crop_soils):
-                score += 25
-                break
+    if user_soil:
+        # Exact/whole-string containment
+        if any(user_soil in cs or cs in user_soil for cs in crop_soils):
+            score += 50
+        else:
+            # Partial / keyword match on user words
+            for s_type in re.split(r"[,\s]+", user_soil):
+                s_type = s_type.strip()
+                if not s_type:
+                    continue
+                if any(s_type in cs or cs in s_type for cs in crop_soils):
+                    score += 25
+                    break
 
-    # --- Soil pH ---
-    min_ph = float(crop.get("soil_ph_min", 0.0))
-    max_ph = float(crop.get("soil_ph_max", 14.0))
-    soil_ph = user_input.get("soilPH", 7.0)
+    # --- Soil pH check ---
+    try:
+        min_ph = float(crop.get("soil_ph_min", 0.0))
+    except Exception:
+        min_ph = 0.0
+    try:
+        max_ph = float(crop.get("soil_ph_max", 14.0))
+    except Exception:
+        max_ph = 14.0
+
+    try:
+        soil_ph = float(user_input.get("soilPH", 7.0))
+    except Exception:
+        soil_ph = 7.0
 
     if min_ph <= soil_ph <= max_ph:
         score += 30
@@ -63,49 +74,65 @@ def calculate_score(crop, user_input, historical_data):
         else:
             score -= (soil_ph - max_ph) * 5
 
-    # --- Climate suitability ---
-    try:
-        crop_min_temp = float(str(crop.get("min_temperature", "0")).replace("°C", "").strip())
-        crop_max_temp = float(str(crop.get("max_temperature", "0")).replace("°C", "").strip())
-        crop_min_rain = float(str(crop.get("min_rainfall", "0")).replace("mm", "").strip())
-        crop_max_rain = float(str(crop.get("max_rainfall", "0")).replace("mm", "").strip())
-    except:
-        crop_min_temp = crop_max_temp = crop_min_rain = crop_max_rain = 0
+    # --- Climate check (temperature & rainfall) ---
+    def _safe_float(val, repl_chars=("°C", "mm")):
+        try:
+            s = str(val)
+            for ch in repl_chars:
+                s = s.replace(ch, "")
+            return float(s.strip())
+        except Exception:
+            return 0.0
 
-    avg_temp = (
-        sum(historical_data.get("temperature_2m_max", [])) /
-        len(historical_data.get("temperature_2m_max", []))
-        if historical_data.get("temperature_2m_max") else 0
-    )
-    avg_rain = (
-        sum(historical_data.get("rain_sum", [])) /
-        len(historical_data.get("rain_sum", []))
-        if historical_data.get("rain_sum") else 0
-    )
+    crop_min_temp = _safe_float(crop.get("min_temperature", "0"))
+    crop_max_temp = _safe_float(crop.get("max_temperature", "0"))
+    crop_min_rain = _safe_float(crop.get("min_rainfall", "0"))
+    crop_max_rain = _safe_float(crop.get("max_rainfall", "0"))
+
+    temps = historical_data.get("temperature_2m_max", []) or []
+    rains = historical_data.get("rain_sum", []) or []
+
+    avg_temp = (sum(temps) / len(temps)) if temps else 0.0
+    avg_rain = (sum(rains) / len(rains)) if rains else 0.0
 
     if crop_min_temp <= avg_temp <= crop_max_temp:
         score += 15
     if crop_min_rain <= avg_rain <= crop_max_rain:
         score += 15
 
-    # --- Irrigation match (substring based) ---
-    crop_irrigation = crop.get("irrigation", {}).get("general", "").lower()
-    user_irrigation = user_input.get("irrigation", "").lower()
+    # --- Irrigation match (substring/keyword based) ---
+    crop_irrigation = (
+        str(crop.get("irrigation", {}).get("general", "")).lower().strip()
+    )
+    user_irrigation = str(user_input.get("irrigation", "")).lower().strip()
 
     if user_irrigation and crop_irrigation:
+        # Whole-string containment either way
         if user_irrigation in crop_irrigation or crop_irrigation in user_irrigation:
             score += 10
+        else:
+            # Keyword-based on user words
+            for word in re.split(r"[,\s]+", user_irrigation):
+                word = word.strip()
+                if word and word in crop_irrigation:
+                    score += 10
+                    break
 
     return score
 
+
 def crop_data_translator(crop_data, target_language):
-    if target_language.lower() == "english":
+    """
+    Translate only VALUES of the crop JSON to target_language using Gemini.
+    Keys are preserved. Returns dict (best effort), or an error dict.
+    Includes gc.collect() to reduce memory footprint after large responses.
+    """
+    if str(target_language).lower() == "english":
         return crop_data
 
     if not GEMINI_API_KEY:
         return {"error": "Gemini API Key not set. Please check your .env file."}
 
-    # Prompt
     prompt_text = f"""
     Translate only the VALUES of the following JSON into {target_language}.
     Do not translate the KEYS.
@@ -114,9 +141,7 @@ def crop_data_translator(crop_data, target_language):
     {json.dumps(crop_data, ensure_ascii=False, indent=2)}
     """
 
-    payload = {
-        "contents": [{"parts": [{"text": prompt_text}]}]
-    }
+    payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
 
     try:
         response = requests.post(
@@ -124,6 +149,7 @@ def crop_data_translator(crop_data, target_language):
             headers={"Content-Type": "application/json"},
             params={"key": GEMINI_API_KEY},
             data=json.dumps(payload),
+            timeout=30,
         )
         response.raise_for_status()
         result = response.json()
@@ -133,24 +159,21 @@ def crop_data_translator(crop_data, target_language):
 
         translated_text = result["candidates"][0]["content"]["parts"][0]["text"]
 
-        # --- Aggressive Cleanup ---
+        # --- Cleanup Gemini formatting (```json ... ```, etc.) ---
         cleaned = translated_text.strip()
-
-        # Remove Markdown fences ```json ... ```
         if cleaned.startswith("```"):
-            cleaned = re.sub(r"^```json|^```|```$", "", cleaned, flags=re.MULTILINE).strip()
+            cleaned = re.sub(
+                r"^```json|^```|```$", "", cleaned, flags=re.MULTILINE
+            ).strip()
 
-        # Try to extract JSON object between { ... }
         match = re.search(r"\{.*\}", cleaned, re.DOTALL)
         if match:
             cleaned = match.group(0)
 
-        # Parse JSON safely
         try:
             translated_json = json.loads(cleaned)
             return translated_json
         except json.JSONDecodeError:
-            # --- Last Resort: rebuild key-value pairs manually ---
             kv_pairs = re.findall(r'"([^"]+)"\s*:\s*"([^"]*)"', cleaned)
             if kv_pairs:
                 reconstructed = {k: v for k, v in kv_pairs}
@@ -158,30 +181,25 @@ def crop_data_translator(crop_data, target_language):
 
             return {
                 "error": "Gemini did not return valid JSON, and cleanup failed.",
-                "raw_output": translated_text
+                "raw_output": translated_text,
             }
 
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
         return {"error": "Error translating crop data."}
+    finally:
+        # Free large locals like prompt_text / translated_text
+        gc.collect()
+
 
 def translate_user_input(fertilizer_value, pest_disease_value):
     """
-    Translates two words from any language to English using the Gemini API.
-    It uses regex to ensure a reliable extraction of the translated words.
-
-    Args:
-        fertilizer_value (str): The value of the 'fertilizer' field.
-        pest_disease_value (str): The value of the 'pestDisease' field.
-
-    Returns:
-        tuple: A tuple containing the translated English strings for fertilizer and pestDisease.
-               Returns the original values if translation fails.
+    Translate two short fields to English via Gemini.
+    Returns (fertilizer_en, pestDisease_en).
     """
-    # Create a simple JSON object to send to the API
     data_to_translate = {
         "fertilizer": fertilizer_value,
-        "pestDisease": pest_disease_value
+        "pestDisease": pest_disease_value,
     }
 
     prompt_text = f"""
@@ -192,9 +210,7 @@ def translate_user_input(fertilizer_value, pest_disease_value):
     {json.dumps(data_to_translate, ensure_ascii=False, indent=2)}
     """
 
-    payload = {
-        "contents": [{"parts": [{"text": prompt_text}]}]
-    }
+    payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
 
     try:
         response = requests.post(
@@ -202,6 +218,7 @@ def translate_user_input(fertilizer_value, pest_disease_value):
             headers={"Content-Type": "application/json"},
             params={"key": GEMINI_API_KEY},
             data=json.dumps(payload),
+            timeout=20,
         )
         response.raise_for_status()
         result = response.json()
@@ -211,28 +228,46 @@ def translate_user_input(fertilizer_value, pest_disease_value):
             return fertilizer_value, pest_disease_value
 
         translated_text = result["candidates"][0]["content"]["parts"][0]["text"]
-        
-        # Use regex to find and extract the translated values
+
         fertilizer_match = re.search(r'"fertilizer"\s*:\s*"([^"]*)"', translated_text)
         pest_disease_match = re.search(r'"pestDisease"\s*:\s*"([^"]*)"', translated_text)
-        
-        # Get the values from the regex matches, or fall back to original values
-        translated_fertilizer = fertilizer_match.group(1) if fertilizer_match else fertilizer_value
-        translated_pest_disease = pest_disease_match.group(1) if pest_disease_match else pest_disease_value
 
-        # Return the translated values as a tuple
+        translated_fertilizer = (
+            fertilizer_match.group(1) if fertilizer_match else fertilizer_value
+        )
+        translated_pest_disease = (
+            pest_disease_match.group(1) if pest_disease_match else pest_disease_value
+        )
+
         return translated_fertilizer, translated_pest_disease
 
     except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
         print(f"Error calling Gemini API for translation: {e}")
-        # Return original values on error
         return fertilizer_value, pest_disease_value
+    finally:
+        gc.collect()
+
 
 def generate_crop_plan_with_gemini(recommended_crop, user_input, weather_data, language):
+    """
+    Create a structured crop plan using Gemini.
+    We try to keep the prompt compact and clean up memory after the call.
+    """
     if not GEMINI_API_KEY:
-        gc.collect()
         return "Gemini API Key not set. Please check your .env file."
 
+    # Prepare compact weather summaries to keep prompt size reasonable
+    hist_t = weather_data.get("historical_data", {}).get("temperature_2m_max", [])
+    hist_r = weather_data.get("historical_data", {}).get("rain_sum", [])
+    fc_t = weather_data.get("forecast_data", {}).get("temperature_2m_max", [])
+    fc_r = weather_data.get("forecast_data", {}).get("rain_sum", [])
+
+    hist_avg_t = (sum(hist_t) / len(hist_t)) if hist_t else "N/A"
+    hist_avg_r = (sum(hist_r) / len(hist_r)) if hist_r else "N/A"
+    fc_avg_t = (sum(fc_t) / len(fc_t)) if fc_t else "N/A"
+    fc_sum_r = (sum(fc_r)) if fc_r else "N/A"
+
+    # Build the prompt
     prompt_text = f"""
     You are an expert agricultural advisor for Indian farmers. Your goal is to provide a comprehensive, actionable, and conversational crop plan for a farmer.
 
@@ -266,12 +301,12 @@ def generate_crop_plan_with_gemini(recommended_crop, user_input, weather_data, l
     - Common Diseases: {', '.join(recommended_crop.get("diseases", []))}
 
     ### Historical Climate Data (1991-2020):
-    - Average Max Temperature: {sum(weather_data.get("historical_data", {}).get("temperature_2m_max", [])) / len(weather_data.get("historical_data", {}).get("temperature_2m_max", [])) if weather_data.get("historical_data", {}).get("temperature_2m_max") else 'N/A'}°C
-    - Average Rainfall: {sum(weather_data.get("historical_data", {}).get("rain_sum", [])) / len(weather_data.get("historical_data", {}).get("rain_sum", [])) if weather_data.get("historical_data", {}).get("rain_sum") else 'N/A'} mm
+    - Average Max Temperature: {hist_avg_t}°C
+    - Average Rainfall: {hist_avg_r} mm
 
     ### Forecast Weather Data:
-    - Next 7 Days Average Max Temp: {sum(weather_data.get("forecast_data", {}).get("temperature_2m_max", [])) / len(weather_data.get("forecast_data", {}).get("temperature_2m_max", [])) if weather_data.get("forecast_data", {}).get("temperature_2m_max") else 'N/A'}°C
-    - Next 7 Days Total Rainfall: {sum(weather_data.get("forecast_data", {}).get("rain_sum", [])) if weather_data.get("forecast_data", {}).get("rain_sum") else 'N/A'} mm
+    - Next 7 Days Average Max Temp: {fc_avg_t}°C
+    - Next 7 Days Total Rainfall: {fc_sum_r} mm
 
     ### Instructions for the Gemini API:
     - Your report should be in Markdown format but no bold words and size of all words should be same.
@@ -288,9 +323,7 @@ def generate_crop_plan_with_gemini(recommended_crop, user_input, weather_data, l
     - Give response in {language}
     """
 
-    payload = {
-        "contents": [{"parts": [{"text": prompt_text}]}]
-    }
+    payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
 
     try:
         response = requests.post(
@@ -298,14 +331,17 @@ def generate_crop_plan_with_gemini(recommended_crop, user_input, weather_data, l
             headers={"Content-Type": "application/json"},
             params={"key": GEMINI_API_KEY},
             data=json.dumps(payload),
+            timeout=45,
         )
         response.raise_for_status()
         result = response.json()
         if "candidates" in result and result["candidates"]:
-            gc.collect()
-            return result["candidates"][0]["content"]["parts"][0]["text"]
-        gc.collect()
+            text = result["candidates"][0]["content"]["parts"][0]["text"]
+            return text
         return "Failed to generate crop plan. Please try again."
     except Exception as e:
         print(f"Error calling Gemini API: {e}")
         return "Error generating crop plan."
+    finally:
+        # Free large locals like prompt_text/result/text
+        gc.collect()

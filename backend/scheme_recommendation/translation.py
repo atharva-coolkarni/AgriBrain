@@ -1,12 +1,24 @@
+import os
+import psutil
+
+
 import requests
 import json
 import time
 import re
-import os
+
+def quick_memory_check(label=""):
+    process = psutil.Process(os.getpid())
+    mem_mb = process.memory_info().rss / 1024 / 1024
+    print(f"{label}: {mem_mb:.2f} MB")
+    return mem_mb
+
+# Example usage:
+quick_memory_check("Start of translation.py")
 
 # --- Gemini API Call ---
 def call_gemini_api(prompt: str) -> str:
-    headers = {"X-goog-api-key": os.environ.get("VEDU_GEMINI_API_KEY"), "Content-Type": "application/json"}
+    headers = {"X-goog-api-key": "AIzaSyBcg_7ZoX3AjjjPqvYecB_S80WfJhRxjqg", "Content-Type": "application/json"}
     GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
@@ -32,16 +44,24 @@ Translate this JSON key into {self.target_lang} language using the NATIVE SCRIPT
 
 IMPORTANT RULES:
 1. Use the native script/writing system of {self.target_lang} (NOT English letters)
-2. Do NOT transliterate - translate properly into native script
-3. If {self.target_lang} is Hindi, use Devanagari script (हिंदी में लिखें)
-4. If {self.target_lang} is Tamil, use Tamil script (தமிழில் எழுதுங்கள்)
-5. If {self.target_lang} is Arabic, use Arabic script (اكتب بالعربية)
-6. Return ONLY the translated text in native script, no English letters
+2. Do NOT transliterate – translate properly into native script
+3. If Hindi, use Devanagari script (हिंदी में लिखें)
+4. If Tamil, use Tamil script (தமிழில் எழுதுங்கள்)
+5. If Telugu, use Telugu script (తెలుగులో వ్రాయండి)
+6. If Bengali, use Bengali script (বাংলায় লিখুন)
+7. If Gujarati, use Gujarati script (ગુજરાતીમાં લખો)
+8. If Marathi, use Devanagari script (मराठीत लिहा)
+9. If Kannada, use Kannada script (ಕನ್ನಡದಲ್ಲಿ ಬರಯಿರಿ)
+10. If Malayalam, use Malayalam script (മലയാളത്തിൽ എഴുതൂ)
+11. If Punjabi, use Gurmukhi script (ਪੰਜਾਬੀ ਵਿੱਚ ਲਿਖੋ)
+12. If Arabic, use Arabic script (اكتب بالعربية)
+13. Return ONLY the translated text in native script, no English letters
 
-Key to translate: {key}
+Text to translate: {key}
 
 Translated key in {self.target_lang} native script:
 """
+
         output = call_gemini_api(prompt).strip()
         output = self._clean_output(output)
         
@@ -64,16 +84,24 @@ Translate this text into {self.target_lang} language using the NATIVE SCRIPT of 
 
 IMPORTANT RULES:
 1. Use the native script/writing system of {self.target_lang} (NOT English letters)
-2. Do NOT transliterate - translate properly into native script
-3. If {self.target_lang} is Hindi, use Devanagari script (हिंदी में लिखें)
-4. If {self.target_lang} is Tamil, use Tamil script (தமிழில் எழுதுங்கள்)
-5. If {self.target_lang} is Arabic, use Arabic script (اكتب بالعربية)
-6. Return ONLY the translated text in native script, no English letters
+2. Do NOT transliterate – translate properly into native script
+3. If Hindi, use Devanagari script (हिंदी में लिखें)
+4. If Tamil, use Tamil script (தமிழில் எழுதுங்கள்)
+5. If Telugu, use Telugu script (తెలుగులో వ్రాయండి)
+6. If Bengali, use Bengali script (বাংলায় লিখুন)
+7. If Gujarati, use Gujarati script (ગુજરાતીમાં લખો)
+8. If Marathi, use Devanagari script (मराठीत लिहा)
+9. If Kannada, use Kannada script (ಕನ್ನಡದಲ್ಲಿ ಬರಯಿರಿ)
+10. If Malayalam, use Malayalam script (മലയാളത്തിൽ എഴുതൂ)
+11. If Punjabi, use Gurmukhi script (ਪੰਜਾਬੀ ਵਿੱਚ ਲਿਖੋ)
+12. If Arabic, use Arabic script (اكتب بالعربية)
+13. Return ONLY the translated text in native script, no English letters
 
 Text to translate: {value}
 
 Translated text in {self.target_lang} native script:
 """
+
         output = call_gemini_api(prompt).strip()
         output = self._clean_output(output)
         
@@ -102,15 +130,15 @@ Translated text in {self.target_lang} native script:
     def _retry_translation_key(self, key: str) -> str:
         """Retry translation with more explicit prompt for keys"""
         language_examples = {
-            'hi': 'हिंदी में (जैसे: किसानों के लिए क्रेडिट सुविधा)',
-            'ta': 'தமிழில் (உதாரணம் போன்று)',
-            'te': 'తెలుగులో (ఉదాహరణకు)',
-            'bn': 'বাংলায় (উদাহরণস্বরূপ)',
-            'gu': 'ગુજરાતીમાં (ઉદાહરણ તરીકે)',
-            'mr': 'मराठीत (उदाहरणार्थ)',
-            'kn': 'ಕನ್ನಡದಲ್ಲಿ (ಉದಾಹರಣೆಗೆ)',
-            'ml': 'മലയാളത്തിൽ (ഉദാഹരണത്തിന്)',
-            'pa': 'ਪੰਜਾਬੀ ਵਿੱਚ (ਉਦਾਹਰਨ ਲਈ)'
+            'hindi': 'हिंदी में (जैसे: किसानों के लिए क्रेडिट सुविधा)',
+            'tamil': 'தமிழில் (உதாரணம் போன்று)',
+            'telugu': 'తెలుగులో (ఉదాహరణకు)',
+            'bengali': 'বাংলায় (উদাহরণস্বরূপ)',
+            'gujarati': 'ગુજરાતીમાં (ઉદાહરણ તરીકે)',
+            'marathi': 'मराठीत (उदाहरणार्थ)',
+            'kannada': 'ಕನ್ನಡದಲ್ಲಿ (ಉದಾಹರಣೆಗೆ)',
+            'malayalam': 'മലയാളത്തിൽ (ഉദാഹരണത്തിന്)',
+            'punjabi': 'ਪੰਜਾਬੀ ਵਿੱਚ (ਉਦਾਹਰਨ ਲਈ)'
         }
         
         example = language_examples.get(self.target_lang.lower(), f'in {self.target_lang} native script')
@@ -145,15 +173,15 @@ Write the translation using ONLY {self.target_lang} native script:
     def _retry_translation_value(self, value: str) -> str:
         """Retry translation with more explicit prompt for values"""
         language_examples = {
-            'hi': 'हिंदी में (जैसे: हाँ, नहीं)',
-            'ta': 'தமிழில் (உதாரணம்: ஆம், இல்லை)',
-            'te': 'తెలుగులో (ఉదాహరణ: అవును, లేదు)',
-            'bn': 'বাংলায় (উদাহরণ: হ্যাঁ, না)',
-            'gu': 'ગુજરાતીમાં (ઉદાહરણ: હા, ના)',
-            'mr': 'मराठीत (उदाहरण: होय, नाही)',
-            'kn': 'ಕನ್ನಡದಲ್ಲಿ (ಉದಾಹರಣೆ: ಹೌದು, ಇಲ್ಲ)',
-            'ml': 'മലയാളത്തിൽ (ഉദാഹരണം: അതെ, ഇല്ല)',
-            'pa': 'ਪੰਜਾਬੀ ਵਿੱਚ (ਉਦਾਹਰਨ: ਹਾਂ, ਨਹੀਂ)'
+            'hindi': 'हिंदी में (जैसे: किसानों के लिए क्रेडिट सुविधा)',
+            'tamil': 'தமிழில் (உதாரணம் போன்று)',
+            'telugu': 'తెలుగులో (ఉదాహరణకు)',
+            'bengali': 'বাংলায় (উদাহরণস্বরূপ)',
+            'gujarati': 'ગુજરાતીમાં (ઉદાહરણ તરીકે)',
+            'marathi': 'मराठीत (उदाहरणार्थ)',
+            'kannada': 'ಕನ್ನಡದಲ್ಲಿ (ಉದಾಹರಣೆಗೆ)',
+            'malayalam': 'മലയാളത്തിൽ (ഉദാഹരണത്തിന്)',
+            'punjabi': 'ਪੰਜਾਬੀ ਵਿੱਚ (ਉਦਾਹਰਨ ਲਈ)'
         }
         
         example = language_examples.get(self.target_lang.lower(), f'in {self.target_lang} native script')
@@ -229,35 +257,27 @@ class EnglishTranslationAgent:
     def __init__(self):
         pass
     
-    def detect_and_translate_to_english(self, text: str) -> str:
-        """Detect language and translate to English"""
+    def detect_and_translate_to_english(self, text: str, language: str) -> str:
+        """Translate text from a specified language to English"""
         prompt = f"""
-You are a language detection and translation expert. Your task is to:
+You are a translation expert. Your task is to:
 
-1. DETECT the language of the given text
-2. TRANSLATE it accurately to English
+1. Translate the following text from {language} to English.
+2. Provide a natural, accurate English translation.
+3. Maintain the original meaning and context.
+4. If the text is already in English, return it as-is.
+5. Return ONLY the English translation, no explanations or additional text.
 
-IMPORTANT RULES:
-1. First detect what language the text is in
-2. Then provide a natural, accurate English translation
-3. Maintain the original meaning and context
-4. If the text is already in English, return it as-is
-5. Return ONLY the English translation, no explanations or additional text
-6. Do not include language detection information in your response
-
-Text to translate: {text}
+Text to translate ({language}): {text}
 
 English translation:
 """
-        
         output = call_gemini_api(prompt).strip()
         output = self._clean_output(output)
-        
         # If translation failed or is empty, return original text
         if not output:
             print(f"English translation failed for: {text}")
             return text
-            
         return output
     
     def _clean_output(self, text: str) -> str:
@@ -283,26 +303,26 @@ English translation:
 
 
 # --- Function to translate query to English ---
-def translate_query_to_english(content_dict):
+def translate_query_to_english(content_dict, language):
     """
-    Translate query value from other languages to English
+    Translate query value from a specified language to English
     Expected format: {'query': 'text in other language'}
+    Args:
+        content_dict: Dictionary with 'query' key
+        language: The current language of the input query
     """
     if not isinstance(content_dict, dict) or 'query' not in content_dict:
         print("❌ Invalid format: Expected {'query': 'text'}")
         return content_dict
-    
+    print("🔄 Translating to English...")
     agent = EnglishTranslationAgent()
     original_query = content_dict['query']
-    
     print(f"🔍 Original query: {original_query}")
-    
-    # Translate to English
-    translated_query = agent.detect_and_translate_to_english(original_query)
-    
+    # Translate to English using the provided language
+    translated_query = agent.detect_and_translate_to_english(original_query, language)
     print(f"🌍 Translated query: {translated_query}")
-    
     # Return the updated dictionary
+    quick_memory_check("End of translate_dict (to English)")
     return {'query': translated_query}
 
 
@@ -369,17 +389,11 @@ def translate_dict(content_dict, language):
         Translated dictionary
     """
     
-    # Check if we need to translate TO English
-    if language.lower() in ['english', 'en', 'eng']:
-        print("🔄 Translating to English...")
-        return translate_query_to_english(content_dict)
-    
-    # Otherwise, translate FROM English to other language (existing code)
-    else:
-        print(f"🔄 Translating to {language}...")
-        agent = TranslationAgent(target_lang=language)
-        translated_dict = translate_nested_dict(content_dict, agent)
-        return translated_dict
+    print(f"🔄 Translating to {language}...")
+    agent = TranslationAgent(target_lang=language)
+    translated_dict = translate_nested_dict(content_dict, agent)
+    quick_memory_check(f"End of translate_dict (to {language})")
+    return translated_dict
 
 
 

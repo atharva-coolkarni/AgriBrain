@@ -197,7 +197,7 @@ useEffect(() => {
     setLoadingSubmit(true);
     try {
       const response = await axios.post(
-        `${API_URL}/rec_schemes.json`,
+        `${API_URL}/rec_schemes`,
         { location: stateName, query: inputText, top_k: 3, language },
         { withCredentials: true }
       );
@@ -219,7 +219,7 @@ useEffect(() => {
     setLoadingCheck(true);
     try {
       const response = await axios.post(
-        `${API_URL}/questions.json`,
+        `${API_URL}/questions`,
         {
           rec_scheme: schemes,
           language: language,
@@ -282,7 +282,7 @@ useEffect(() => {
   const submitEligibility = async () => {
     setLoadingEligibility(true);
     try {
-      const response = await axios.post(`${API_URL}/check_schemes.json`, {
+      const response = await axios.post(`${API_URL}/check_schemes`, {
         exp_qa: eligibilityQuestions,
         user_qa: responses,
       });
