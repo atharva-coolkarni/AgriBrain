@@ -19,7 +19,7 @@ quick_memory_check("Start of translation.py")
 # --- Gemini API Call ---
 def call_gemini_api(prompt: str) -> str:
     headers = {"X-goog-api-key": "AIzaSyBcg_7ZoX3AjjjPqvYecB_S80WfJhRxjqg", "Content-Type": "application/json"}
-    GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+    GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     
     try:

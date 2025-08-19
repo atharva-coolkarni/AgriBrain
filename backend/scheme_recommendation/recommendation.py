@@ -186,7 +186,7 @@ def semantic_search_optimized(vector_store: FAISS, query: str, top_k: int = 3) -
 
 def call_gemini_api_optimized(prompt: str, api_key: str) -> str:
     """Optimized Gemini API call with error handling"""
-    GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+    GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
     
     headers = {
         "X-goog-api-key": api_key, 
