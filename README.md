@@ -38,7 +38,6 @@ The solution focuses on addressing crop selection uncertainty, market price vola
 
 ### Frontend
 - **React.js**
-- **Tailwind CSS**
 - Multilingual UI + **voice input integration**
 
 ---
@@ -64,7 +63,7 @@ The solution focuses on addressing crop selection uncertainty, market price vola
 ```text
                ┌─────────────────────────┐
                │        Frontend         │
-               │  React.js + Tailwind    │
+               │        React.js         │
                │  Multilingual + Voice   │
                └───────────┬────────────┘
                            │
