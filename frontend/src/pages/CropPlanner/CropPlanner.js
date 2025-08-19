@@ -451,7 +451,7 @@ function CropPlanner() {
   
 };
 
-
+  const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
   const { lat, lon, language } = location.state || {};
@@ -491,11 +491,17 @@ function CropPlanner() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://127.0.0.1:5000/recommend-crop", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      console.log(formData);
+      
+      
+      const res = await fetch(
+        `${API_URL}/recommend-crop`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await res.json();
       setLoading(false);
     } catch (error) {

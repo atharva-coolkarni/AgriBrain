@@ -2,10 +2,11 @@ import requests
 import json
 import time
 import re
+import os
 
 # --- Gemini API Call ---
 def call_gemini_api(prompt: str) -> str:
-    headers = {"X-goog-api-key": "AIzaSyBcg_7ZoX3AjjjPqvYecB_S80WfJhRxjqg", "Content-Type": "application/json"}
+    headers = {"X-goog-api-key": os.environ.get("VEDU_GEMINI_API_KEY"), "Content-Type": "application/json"}
     GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
     

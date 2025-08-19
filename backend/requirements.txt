@@ -13,3 +13,4 @@ langchain-community
 faiss-cpu
 python-dotenv
 flask_cors
+gunicorn

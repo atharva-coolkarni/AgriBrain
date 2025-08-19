@@ -24,7 +24,7 @@ def get_schemes(schemes ,user_location, query, top_k=3, api_key=None):
     # ========= GEMINI CONFIG =========
     GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
     if not api_key:
-        api_key = os.environ.get("GOOGLE_API_KEY_GEMINI", "")
+        api_key = os.environ.get("VEDU_GEMINI_API_KEY")
     if not api_key:
         raise ValueError("Google API Key for Gemini not provided.")
 

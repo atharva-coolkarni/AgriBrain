@@ -1,14 +1,14 @@
 {
-    "kcc for animal husbandry and fisheries": {
-        "URL": "https://agriculture.vikaspedia.in/viewcontent/schemesall/schemes-for-farmers/kcc-for-animal-husbandry-and-fisheries?lgn=en",
-        "Reason": "This scheme provides loans to farmers and fishers, which could potentially free up personal funds or provide a means to service a mortgage."
-    },
     "credit facility for farmers": {
         "URL": "https://agriculture.vikaspedia.in/viewcontent/schemesall/schemes-for-farmers/credit-facility-for-farmers?lgn=en",
-        "Reason": "This scheme offers credit to farmers, which could potentially free up personal funds or provide a means to service a mortgage."
+        "Reason": "This scheme provides loans to farmers for various agricultural activities."
+    },
+    "kcc for animal husbandry and fisheries": {
+        "URL": "https://agriculture.vikaspedia.in/viewcontent/schemesall/schemes-for-farmers/kcc-for-animal-husbandry-and-fisheries?lgn=en",
+        "Reason": "This scheme provides loans to farmers involved in animal husbandry and fisheries."
     },
     "animal husbandry infrastructure development fund": {
         "URL": "https://agriculture.vikaspedia.in/viewcontent/schemesall/schemes-for-farmers/animal-husbandry-infrastructure-development-fund?lgn=en",
-        "Reason": "This scheme provides financial assistance for projects related to dairy, meat processing etc., potentially improving income and freeing up personal funds for other purposes like mortgage payments."
+        "Reason": "This scheme provides financial assistance for projects related to dairy and meat processing which may require housing infrastructure."
     }
 }

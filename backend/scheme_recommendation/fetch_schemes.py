@@ -6,6 +6,9 @@ import os
 import time
 import urllib3
 from pymongo import MongoClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def create_database(connection_string,database_name, collection_name):
 
@@ -186,7 +189,7 @@ def create_database(connection_string,database_name, collection_name):
             return {}
 
     GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-    os.environ["GOOGLE_API_KEY_GEMINI"] = "AIzaSyBcg_7ZoX3AjjjPqvYecB_S80WfJhRxjqg"  # replace with your key or set env var
+    GEMINI_API_KEY = os.environ.get("VEDU_GEMINI_API_KEY")  # replace with your key or set env var
 
     def call_gemini_api_safe(prompt: str) -> str:
         """
@@ -194,7 +197,7 @@ def create_database(connection_string,database_name, collection_name):
         """
         nonlocal _last_call_time
 
-        api_key = os.environ["GOOGLE_API_KEY_GEMINI"]
+        api_key = GEMINI_API_KEY
         headers = {"X-goog-api-key": api_key, "Content-Type": "application/json"}
         payload = {"contents": [{"parts": [{"text": prompt}]}]}
 

@@ -88,7 +88,7 @@ def fetch_schemes_as_name_keyed_dict(connection_string, database_name, collectio
 
 @app.route('/schemes.json', methods=['POST'])
 def get_schemes_json():
-    CONNECTION_STRING = "mongodb+srv://vedantkul30:PYQTbwRTUzisGmYo@cluster0.agmksey.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    CONNECTION_STRING = mongo_uri
     database_name = "scheme_db"
     collection_name = "agricultural_schemes"
     create_database(CONNECTION_STRING, database_name, collection_name)
@@ -115,7 +115,7 @@ def get_recommd_json():
     
     # Store language in session for use in subsequent requests
     
-    CONNECTION_STRING = "mongodb+srv://vedantkul30:PYQTbwRTUzisGmYo@cluster0.agmksey.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    CONNECTION_STRING = mongo_uri
     database_name = "scheme_db"
     collection_name = "agricultural_schemes"
     
@@ -146,7 +146,7 @@ def get_questons():
     
     
 
-    CONNECTION_STRING = "mongodb+srv://vedantkul30:PYQTbwRTUzisGmYo@cluster0.agmksey.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+    CONNECTION_STRING = mongo_uri
     database_name = "scheme_db"
     collection_name = "agricultural_schemes"
     

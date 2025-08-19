@@ -130,7 +130,7 @@ function Schemes() {
     }
 };
 
-
+  const API_URL = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
   const location = useLocation();
   const { stateName, language } = location.state || {};
@@ -197,7 +197,7 @@ useEffect(() => {
     setLoadingSubmit(true);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/rec_schemes.json",
+        `${API_URL}/rec_schemes.json`,
         { location: stateName, query: inputText, top_k: 3, language },
         { withCredentials: true }
       );
@@ -218,12 +218,16 @@ useEffect(() => {
     if (!schemes) return;
     setLoadingCheck(true);
     try {
-      const response = await axios.post("http://127.0.0.1:5000/questions.json", {
-        rec_scheme : schemes,
-        language: language
-      }, {
-        withCredentials: true   // 👈 correct place
-      });
+      const response = await axios.post(
+        `${API_URL}/questions.json`,
+        {
+          rec_scheme: schemes,
+          language: language,
+        },
+        {
+          withCredentials: true, // 👈 correct place
+        }
+      );
       const questions = response.data;
 
       const defaultResponses = {};
@@ -278,7 +282,7 @@ useEffect(() => {
   const submitEligibility = async () => {
     setLoadingEligibility(true);
     try {
-      const response = await axios.post("http://127.0.0.1:5000/check_schemes.json", {
+      const response = await axios.post(`${API_URL}/check_schemes.json`, {
         exp_qa: eligibilityQuestions,
         user_qa: responses,
       });
